@@ -98,34 +98,48 @@ DRAIN_CHOICES = (
 )
 
 
-class CaseForm0(models.Model):
+class CaseForm(models.Model):
+    class Meta:
+        verbose_name= 'Case Form'
     patient= models.CharField(verbose_name='Patient Name',
                               max_length=DEFAULT_LONG_CHARFIELD_LENGTH)
     age= models.IntegerField(verbose_name='Patient Age',
                              blank=True)
     ip= models.CharField(verbose_name='IP Code',
+                         blank=True,
                          max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
     surgeon= models.CharField(verbose_name='Surgeon',
-                               max_length=DEFAULT_LONG_CHARFIELD_LENGTH)
-    admission_date = models.DateField(verbose_name='Date of Admission')
-    surgery_date = models.DateField(verbose_name='Date of Surgery')
-    discharge_date = models.DateField(verbose_name='Date of Discharge')
+                              blank=True,
+                              max_length=DEFAULT_LONG_CHARFIELD_LENGTH)
+    admission_date = models.DateField(verbose_name='Date of Admission',
+                                        blank=True)
+    surgery_date = models.DateField(verbose_name='Date of Surgery',
+                                    blank=True)
+    discharge_date = models.DateField(verbose_name='Date of Discharge',
+                                      blank=True)
 
     height= models.IntegerField(verbose_name='Height in cm')
     weight= models.IntegerField(verbose_name='Weight in kg')
     menache_age= models.IntegerField(verbose_name='Age at Menache',
                                      blank=True)
     main_telephone= models.CharField(verbose_name='Main Telephone number',
+                                     blank=True,
                                 max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
-    other_telephone= models.TextField(verbose_name='Other Telephone numbers')
-    address= models.TextField(verbose_name='Patient Address')
-    regular_period= models.NullBooleanField(verbose_name="Are Patient's Periods Regular?")
-    last_period= models.DateField(verbose_name="Date of last Period Date")
+    other_telephone= models.TextField(verbose_name='Other Telephone numbers',
+                                      blank=True)
+    address= models.TextField(verbose_name='Patient Address',
+                              blank=True)
+    regular_period= models.NullBooleanField(verbose_name="Are Patient's Periods Regular?",
+                                            blank=True)
+    last_period= models.DateField(verbose_name="Date of last Period Date",
+                                  blank=True)
     marital_status = models.CharField(verbose_name='Marital Status',
                                       max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
-                                      choices=MARITAL_STATUS_CHOICES)
+                                      choices=MARITAL_STATUS_CHOICES,
+                                      blank=True)
     social_status =  models.CharField(verbose_name='Social Status',
                                       max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
+                                      blank=True,
                                       choices=SOCIAL_STATUS_CHOICES)
     first_pregnancy_age =  models.IntegerField(verbose_name='Age at first Pregnancy',
                                                blank=True,
@@ -144,40 +158,46 @@ class CaseForm0(models.Model):
     last_pregnancy_age =  models.IntegerField(verbose_name='Age at last Pregnancy',
                                                blank=True,
                                                help_text='yrs')
-    treatment_center_travel = models.TextField(verbose_name='How did the Patient get to the treatment center?')
+    treatment_center_travel = models.TextField(verbose_name='How did the Patient get to the treatment center?',
+                                               blank=True,)
     treatment_center_travel_cost = models.CharField(verbose_name='How much did the journey to the treatment center cost?',
+                                                    blank=True,
                                                     max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
     age_fistula_started= models.IntegerField(verbose_name='Age when the Fistula occurred',
                                              blank=True)
     labor_duration= models.IntegerField(verbose_name='How long was the labor?',
-                                     help_text='hrs')
+                                        blank=True,
+                                        help_text='hrs')
     baby_birth_location= models.CharField(verbose_name='Where was the baby born?',
+                                          blank=True,
                                           max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                           choices=BIRTH_LOCATION_CHOICES)
     delivery_type= models.CharField(verbose_name='What type of Delivery?',
-                                        max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
-                                          choices=DELIVERY_CHOICES)
+                                    blank=True,
+                                    max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
+                                      choices=DELIVERY_CHOICES)
     delivery_outcome= models.CharField(verbose_name='Delivery Outcome?',
+                                       blank=True,
                                        max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
-                                          choices=DELIVERY_OUTCOME_CHOICES)
+                                      choices=DELIVERY_OUTCOME_CHOICES)
     fistula_cause= models.CharField(verbose_name='Cause of Fistula?',
                                     max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
-                                          choices=CAUSE_OF_FISTALA_CHOICES)
+                                    blank=True,
+                                    choices=CAUSE_OF_FISTALA_CHOICES)
     urine_leak_frequency= models.CharField(verbose_name='How often do you leak urine?',
                                            help_text='(Ask the patient)',
+                                           blank=True,
                                            max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                            choices=URINE_LEAK_FREQUENCY_CHOICES)
     urine_leak_amount= models.CharField(verbose_name='How much urine do you usually leak?',
                                            help_text='(Ask the patient)',
+                                           blank=True,
                                            max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                            choices=URINE_LEAK_AMOUNT_CHOICES)
     urine_leak_interference= models.IntegerField(verbose_name='How much does the urine leaking interfere with your daily life?',
                                            help_text='(Ask the patient)',
                                            blank=True,
                                            choices=URINE_LEAK_ANNOYANCE_CHOICES)
-
-
-
 
     # wardnurse = models.CharField(max_length=DEFAULT_LONG_CHARFIELD_LENGTH)
     # anasthetic = models.CharField(max_length=DEFAULT_LONG_CHARFIELD_LENGTH,choices=ANASTHETIC_TECHNIQUE_CHOICES)
@@ -190,10 +210,9 @@ class CaseForm0(models.Model):
     # drain_type= models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,choices=DRAIN_CHOICES)
 
 
-
 class Case(models.Model):
     status = models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,choices=CASE_STATUS_CHOICES)
-    caseform = models.ForeignKey(CaseForm0)
+    caseform = models.ForeignKey(CaseForm)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
 
@@ -207,7 +226,7 @@ class Case(models.Model):
 
 
 
-class CaseForm(ModelForm):
+class CaseFormForm(ModelForm):
     class Meta:
-        model = CaseForm0
+        model = CaseForm
         fields = '__all__'

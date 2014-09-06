@@ -1,3 +1,4 @@
 from django.contrib import admin
+from CaseEntry.models import CaseForm
 
-# Register your models here.
+admin.site.register(CaseForm)
