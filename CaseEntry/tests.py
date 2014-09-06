@@ -1,6 +1,16 @@
 from django.test import TestCase
+from CaseEntry.models import Case, CaseForm0
+from django.core.urlresolvers import resolve
+from django.test import TestCase
+from CaseEntry.views import case_form
 
-from CaseManager.models import Case, CaseForm0
+class CaseFormPageTest(TestCase):
+
+    def test_caseform_url_resolves(self):
+        # use django's 'resolve' fn to see if the path & view are the same
+        found = resolve('/case/')
+        self.assertEqual(found.func, case_form)
+
 
 class SimpleCaseTestCase(TestCase):
     def setUp(self):
@@ -29,3 +39,4 @@ class SimpleCaseTestCase(TestCase):
         """Animals that can speak are correctly identified"""
         newcase = Case.objects.get(id=1)
         self.assertEqual(newcase.caseform.patient, 'new patient')
+

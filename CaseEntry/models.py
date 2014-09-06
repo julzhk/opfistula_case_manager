@@ -1,5 +1,8 @@
 from django.db import models
 import datetime
+from django.forms import ModelForm
+
+
 DEFAULT_LONG_CHARFIELD_LENGTH = 90
 DEFAULT_SHORT_CHARFIELD_LENGTH = 30
 
@@ -66,3 +69,10 @@ class Case(models.Model):
             self.created_at = datetime.datetime.today()
         self.updated_at = datetime.datetime.today()
         return super(Case, self).save(*args, **kwargs)
+
+
+
+
+class CaseForm(ModelForm):
+    class Meta:
+        model = CaseForm0
