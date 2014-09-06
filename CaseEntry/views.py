@@ -8,6 +8,8 @@ def case_form(request):
     if request.method == 'POST':
         form = CaseForm(request.POST)
         if form.is_valid():
+            new_case = form.save()
+
             return HttpResponseRedirect('/thanks/')
     else:
         form = CaseForm()
