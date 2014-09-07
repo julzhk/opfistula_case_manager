@@ -21,7 +21,7 @@
     OpFistula Case Form
 </h1>
 
-<form action="/" method="post" class="form-horizontal">
+<form action="/" method="post" id="submissionform" class="form-horizontal">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Submit" />

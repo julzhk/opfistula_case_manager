@@ -105,6 +105,8 @@ class CaseForm(models.Model):
     patient= models.CharField(verbose_name='Patient Name',
                               max_length=DEFAULT_LONG_CHARFIELD_LENGTH)
     age= models.IntegerField(verbose_name='Patient Age',
+                             null=True,
+                             default=0,
                              blank=True)
     ip= models.CharField(verbose_name='IP Code',
                          blank=True,
@@ -113,6 +115,7 @@ class CaseForm(models.Model):
                               blank=True,
                               max_length=DEFAULT_LONG_CHARFIELD_LENGTH)
     admission_date = models.DateField(verbose_name='Date of Admission',
+                                      null=True,
                                         blank=True)
     surgery_date = models.DateField(verbose_name='Date of Surgery',
                                     blank=True,
@@ -218,7 +221,8 @@ class CaseForm(models.Model):
                                            null=True,
                                            blank=True,
                                            choices=URINE_LEAK_ANNOYANCE_CHOICES)
-
+    def __unicode__(self):
+        return "%s" % (self.patient)
 
 class Case(models.Model):
     status = models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
@@ -234,6 +238,8 @@ class Case(models.Model):
             self.created_at = timezone.now()
         self.updated_at = timezone.now()
         return super(Case, self).save(*args, **kwargs)
+    def __unicode__(self):
+        return "%s" % (self.caseform.patient)
 
 
 class CaseFormForm(ModelForm):
