@@ -219,19 +219,11 @@ class CaseForm(models.Model):
                                            blank=True,
                                            choices=URINE_LEAK_ANNOYANCE_CHOICES)
 
-    # wardnurse = models.CharField(max_length=DEFAULT_LONG_CHARFIELD_LENGTH)
-    # anasthetic = models.CharField(max_length=DEFAULT_LONG_CHARFIELD_LENGTH,choices=ANASTHETIC_TECHNIQUE_CHOICES)
-    # diagnosis = models.TextField()
-    # operation_performed = models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
-    # dye_test = models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,choices=DYE_TEST_CHOICES)
-    # surgery_duration = models.IntegerField(blank=True)
-    # blood_loss= models.IntegerField(blank=True)
-    # drains= models.NullBooleanField()
-    # drain_type= models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,choices=DRAIN_CHOICES)
-
 
 class Case(models.Model):
-    status = models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,choices=CASE_STATUS_CHOICES)
+    status = models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
+                              choices=CASE_STATUS_CHOICES,
+                              default=CASE_STATUS_CHOICES[0][0])
     caseform = models.ForeignKey(CaseForm)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()

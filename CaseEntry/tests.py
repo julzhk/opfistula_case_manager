@@ -27,8 +27,13 @@ class SimpleCaseTestCase(TestCase):
         Case.objects.create(
             caseform = newcaseform
         )
-    def test_case_features(self):
-        """Animals that can speak are correctly identified"""
+
+    def test_casefrom_creates_a_case(self):
         newcase = Case.objects.get(id=1)
         self.assertEqual(newcase.caseform.patient, 'new patient')
+
+    def test_casefrom_creates_with_default_status(self):
+        newcase = Case.objects.get(id=1)
+        self.assertEqual(newcase.status, 'NEW')
+
 
