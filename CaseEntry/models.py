@@ -1,7 +1,8 @@
 from django.db import models
 import datetime
 from django.forms import ModelForm
-
+import pytz
+from django.utils import timezone
 
 DEFAULT_LONG_CHARFIELD_LENGTH = 90
 DEFAULT_SHORT_CHARFIELD_LENGTH = 30
@@ -114,25 +115,27 @@ class CaseForm(models.Model):
     admission_date = models.DateField(verbose_name='Date of Admission',
                                         blank=True)
     surgery_date = models.DateField(verbose_name='Date of Surgery',
-                                    blank=True)
+                                    blank=True,
+                                    null=True)
     discharge_date = models.DateField(verbose_name='Date of Discharge',
-                                      blank=True)
+                                      blank=True,
+                                      null=True)
 
-    height= models.IntegerField(verbose_name='Height in cm')
-    weight= models.IntegerField(verbose_name='Weight in kg')
+    height= models.IntegerField(verbose_name='Height in cm',blank=True, null=True)
+    weight= models.IntegerField(verbose_name='Weight in kg',blank=True, null=True)
     menache_age= models.IntegerField(verbose_name='Age at Menache',
-                                     blank=True)
+                                     blank=True, null=True)
     main_telephone= models.CharField(verbose_name='Main Telephone number',
-                                     blank=True,
+                                     blank=True, null=True,
                                 max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
     other_telephone= models.TextField(verbose_name='Other Telephone numbers',
-                                      blank=True)
+                                      blank=True, null=True)
     address= models.TextField(verbose_name='Patient Address',
                               blank=True)
     regular_period= models.NullBooleanField(verbose_name="Are Patient's Periods Regular?",
                                             blank=True)
     last_period= models.DateField(verbose_name="Date of last Period Date",
-                                  blank=True)
+                                  blank=True, null=True)
     marital_status = models.CharField(verbose_name='Marital Status',
                                       max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                       choices=MARITAL_STATUS_CHOICES,
@@ -143,59 +146,76 @@ class CaseForm(models.Model):
                                       choices=SOCIAL_STATUS_CHOICES)
     first_pregnancy_age =  models.IntegerField(verbose_name='Age at first Pregnancy',
                                                blank=True,
+                                               null=True,
                                                help_text='yrs')
     first_pregnancy_fathers_age =  models.IntegerField(verbose_name='Age of Father at first Pregnancy',
-                                               blank=True,
+                                               blank=True, null=True,
                                                help_text='yrs')
     pregnancy_count = models.IntegerField(verbose_name='Number of Pregnancies',
+                                               null=True,
                                                blank=True)
     living_children_count = models.IntegerField(verbose_name='Number of Living Children',
+                                               null=True,
                                                blank=True)
     stillbirth_count = models.IntegerField(verbose_name='Number of Stillbirths',
+                                               null=True,
                                                blank=True)
     early_neonatal_death_count = models.IntegerField(verbose_name='Number of Early Neonatal Deaths',
+                                               null=True,
                                                blank=True)
     last_pregnancy_age =  models.IntegerField(verbose_name='Age at last Pregnancy',
+                                               null=True,
                                                blank=True,
                                                help_text='yrs')
     treatment_center_travel = models.TextField(verbose_name='How did the Patient get to the treatment center?',
+                                               null=True,
                                                blank=True,)
     treatment_center_travel_cost = models.CharField(verbose_name='How much did the journey to the treatment center cost?',
+                                                    null=True,
                                                     blank=True,
                                                     max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
     age_fistula_started= models.IntegerField(verbose_name='Age when the Fistula occurred',
+                                             null=True,
                                              blank=True)
     labor_duration= models.IntegerField(verbose_name='How long was the labor?',
+                                        null=True,
                                         blank=True,
                                         help_text='hrs')
     baby_birth_location= models.CharField(verbose_name='Where was the baby born?',
+                                          null=True,
                                           blank=True,
                                           max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                           choices=BIRTH_LOCATION_CHOICES)
     delivery_type= models.CharField(verbose_name='What type of Delivery?',
+                                    null=True,
                                     blank=True,
                                     max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                       choices=DELIVERY_CHOICES)
     delivery_outcome= models.CharField(verbose_name='Delivery Outcome?',
+                                       null=True,
                                        blank=True,
                                        max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                       choices=DELIVERY_OUTCOME_CHOICES)
     fistula_cause= models.CharField(verbose_name='Cause of Fistula?',
+                                    null=True,
                                     max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                     blank=True,
                                     choices=CAUSE_OF_FISTALA_CHOICES)
     urine_leak_frequency= models.CharField(verbose_name='How often do you leak urine?',
                                            help_text='(Ask the patient)',
+                                           null=True,
                                            blank=True,
                                            max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                            choices=URINE_LEAK_FREQUENCY_CHOICES)
     urine_leak_amount= models.CharField(verbose_name='How much urine do you usually leak?',
                                            help_text='(Ask the patient)',
+                                           null=True,
                                            blank=True,
                                            max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                            choices=URINE_LEAK_AMOUNT_CHOICES)
     urine_leak_interference= models.IntegerField(verbose_name='How much does the urine leaking interfere with your daily life?',
                                            help_text='(Ask the patient)',
+                                           null=True,
                                            blank=True,
                                            choices=URINE_LEAK_ANNOYANCE_CHOICES)
 
@@ -219,11 +239,9 @@ class Case(models.Model):
     def save(self, *args, **kwargs):
         """ On save, update timestamps """
         if not self.id:
-            self.created_at = datetime.datetime.today()
-        self.updated_at = datetime.datetime.today()
+            self.created_at = timezone.now()
+        self.updated_at = timezone.now()
         return super(Case, self).save(*args, **kwargs)
-
-
 
 
 class CaseFormForm(ModelForm):

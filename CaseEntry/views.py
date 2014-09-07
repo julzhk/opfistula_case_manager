@@ -11,7 +11,7 @@ def case_form(request):
             new_case = form.save()
             return HttpResponseRedirect('/casesubmitted/')
     else:
-        form = CaseForm()
+        form = CaseFormForm()
     return render(request, 'case_form.html', {'form': form})
 
 def casesubmitted(request):

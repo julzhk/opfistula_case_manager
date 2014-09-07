@@ -1,8 +1,9 @@
 from django.test import TestCase
-from CaseEntry.models import Case, CaseForm0
+from CaseEntry.models import Case, CaseForm
 from django.core.urlresolvers import resolve
 from django.test import TestCase
 from CaseEntry.views import case_form
+import datetime
 
 class CaseFormPageTest(TestCase):
 
@@ -14,24 +15,15 @@ class CaseFormPageTest(TestCase):
 
 class SimpleCaseTestCase(TestCase):
     def setUp(self):
-        CaseForm0.objects.create(
+        CaseForm.objects.create(
             patient='new patient',
             age=22,
             ip= 'ipcode',
-            surgeon1= 'first surgeon',
-            surgeon2 ='second surgeon',
-            theatrenurse ='the thea nurse',
-            wardnurse ='ward nurse',
-            # anasthetic =
-            diagnosis = 'diagnosis',
-            operation_performed ='op performed',
-            # dye_test =
-            surgery_duration =60,
-            blood_loss=33,
-            drains=True,
-            drain_type='JP'
+            admission_date= '2014-4-14',
+            surgery_date= '2014-5-24',
+            surgeon= 'first surgeon',
 )
-        newcaseform = CaseForm0.objects.get(patient='new patient')
+        newcaseform = CaseForm.objects.get(patient='new patient')
         Case.objects.create(
             caseform = newcaseform
         )
