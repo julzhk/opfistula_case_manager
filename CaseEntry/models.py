@@ -1,8 +1,6 @@
-from django.db import models
-import datetime
 from django.forms import ModelForm
-import pytz
 from django.utils import timezone
+from django.db import models
 
 DEFAULT_LONG_CHARFIELD_LENGTH = 90
 DEFAULT_SHORT_CHARFIELD_LENGTH = 30

@@ -1,3 +1,4 @@
+from CaseEntry.usermodel import MedicalUser
 from django.test import TestCase
 from CaseEntry.models import Case, CaseForm
 from django.core.urlresolvers import resolve
@@ -36,4 +37,13 @@ class SimpleCaseTestCase(TestCase):
         newcase = Case.objects.get(id=1)
         self.assertEqual(newcase.status, 'NEW')
 
+
+class UserTestCase(TestCase):
+    def test_create_user(self):
+        k = MedicalUser.objects.create(organization='Adam Clinic',email='t@g.com')
+        self.assertEquals(k.organization , 'Adam Clinic')
+        self.assertEquals(k.is_staff , False)
+        self.assertEquals(k.is_admin, False)
+        self.assertEquals(k.is_active, True)
+        self.assertEquals(k.email, 't@g.com')
 
