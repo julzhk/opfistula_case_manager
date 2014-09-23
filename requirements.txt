@@ -6,7 +6,7 @@ django-toolbelt==0.0.1
 gunicorn==19.1.1
 psycopg2==2.5.3
 static3==0.5.1
+South==0.8.4
 wsgiref==0.1.2
 requests==2.4.0
-South==0.8.4
 pytz==2014.7
