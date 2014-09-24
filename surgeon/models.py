@@ -12,4 +12,4 @@ class Surgeon(models.Model):
     user = models.OneToOneField(User)
     institution = models.CharField(verbose_name='Institution',
                                    max_length=settings.DEFAULT_LONG_CHARFIELD_LENGTH)
-    cases = models.ForeignKey(Case)
+    cases = models.ForeignKey(Case, blank=True)
