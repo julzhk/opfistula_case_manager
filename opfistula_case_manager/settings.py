@@ -1,8 +1,13 @@
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-SECRET_KEY = '!8v_6s=-wp1by4(fb(_#q#2qzziwzyfswlnjs@tw_7a88y3v+6'
+
+try:
+    SECRET_KEY = os.environ['SECRET_KEY']
+except KeyError:
+    raise EnvironmentError('Must set SECRET_KEY in environment')
+
 DEBUG = True
 
 TEMPLATE_DEBUG = True
@@ -19,6 +24,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'south',
     'CaseEntry',
+    'surgeon',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -48,10 +54,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR,  'templates'),
+    os.path.join(BASE_DIR, 'templates'),
 )
 
 import os
+
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
@@ -61,14 +68,18 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_PATH, 'static'),
 )
 
-if os.environ.get('HEROKU',False):
+if os.environ.get('HEROKU', False):
     # Parse database configuration from $DATABASE_URL
     import dj_database_url
-    DATABASES['default'] =  dj_database_url.config()
-    DEBUG = os.environ.get('DEBUG',False)
+
+    DATABASES['default'] = dj_database_url.config()
+    DEBUG = os.environ.get('DEBUG', False)
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
+
+DEFAULT_LONG_CHARFIELD_LENGTH = 90
+DEFAULT_SHORT_CHARFIELD_LENGTH = 30
