@@ -3,7 +3,10 @@ from django import forms
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from CaseEntry.models import CaseForm, CaseFormForm, Case
+from django.contrib.auth.decorators import login_required
 
+
+@login_required
 def case_form(request):
     if request.method == 'POST':
         form = CaseFormForm(request.POST)
