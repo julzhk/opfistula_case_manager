@@ -2,7 +2,7 @@ from django.forms import ModelForm
 from django.utils import timezone
 from django.db import models
 from django.conf import settings
-
+from surgeon.models import Surgeon
 DEFAULT_LONG_CHARFIELD_LENGTH = settings.DEFAULT_LONG_CHARFIELD_LENGTH
 DEFAULT_SHORT_CHARFIELD_LENGTH = settings.DEFAULT_SHORT_CHARFIELD_LENGTH
 
@@ -232,6 +232,7 @@ class Case(models.Model):
                               choices=CASE_STATUS_CHOICES,
                               default=CASE_STATUS_CHOICES[0][0])
     caseform = models.ForeignKey(CaseForm)
+    surgeon = models.ForeignKey(Surgeon, blank=True,null=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
 
@@ -249,4 +250,3 @@ class Case(models.Model):
 class CaseFormForm(ModelForm):
     class Meta:
         model = CaseForm
-        fields = '__all__'

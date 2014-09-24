@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+    {% block body %}
+        <h1>
+        Your cases
+        </h1>
+        <p>
+        Cases for {{ surgeon }} ({{ surgeon.first_name }}&nbsp;{{ surgeon.last_name}})
+        </p>
+        <div class="table-responsive">
+        <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>
+                Case No
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                status
+            </th>
+        </tr>
+        </thead>
+            {%  for case in cases %}
+                <tr>
+                <td>
+                    {{ case.id }}
+                </td>
+                <td>
+                {{ case.caseform.patient }}
+                </td>
+                <td>
+                {{ case.status }}
+                </td>
+                </tr>
+            {% empty %}
+                None yet
+            {% endfor %}
+        </table>
+        </div>
+        <a href="{% url 'caseform' %}">
+            Add new case?
+        </a>
+    {% endblock %}
+</ul>
