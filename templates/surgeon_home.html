@@ -4,7 +4,10 @@
         Your cases
         </h1>
         <p>
-        Cases for {{ surgeon }} ({{ surgeon.first_name }}&nbsp;{{ surgeon.last_name}})
+        Cases for {{ surgeon }}
+            {% if surgeon.first_name and surgeon.last_name  %}
+                ({{ surgeon.first_name }}&nbsp;{{ surgeon.last_name}})
+            {% endif %}
         </p>
         <div class="table-responsive">
         <table class="table table-striped">
@@ -24,7 +27,9 @@
             {%  for case in cases %}
                 <tr>
                 <td>
-                    {{ case.id }}
+                    <a href="{% url 'case' case.id %}">
+                        {{ case.id }}
+                    </a>
                 </td>
                 <td>
                 {{ case.caseform.patient }}

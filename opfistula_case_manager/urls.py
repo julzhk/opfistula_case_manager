@@ -10,8 +10,11 @@ urlpatterns = patterns('',
     # url(r'^$', 'CaseEntry.views.home', name='home'),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', name='logout'),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'admin/login.html'}),
-    url(r'^$', 'surgeon.views.surgeon_home', name='home'),
-    url(r'^case/', 'CaseEntry.views.case_form', name='caseform'),
+    url(r'^caselist/$', 'surgeon.views.surgeon_home', name='caselist'),
+    url(r'^submitcase/', 'CaseEntry.views.case_form', name='caseform'),
+    url(r'^case/(?P<id>\d)/$', 'CaseEntry.views.view_case', name='case'),
     url(r'^casesubmitted/', 'CaseEntry.views.casesubmitted', name='casesubmitted'),
+    url(r'^$', 'surgeon.views.home', name='home'),
     url(r'^admin/', include(admin.site.urls)),
+
 )

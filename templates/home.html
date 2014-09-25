@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+    {% block body %}
+        <h1>
+        OpFistula
+        </h1>
+        <ul>
+            <li>
+                <a href="{% url 'caselist' %}">Your cases</a>
+            </li>
+        <li>
+            <a href="{% url 'caseform' %}">Add new case?</a>
+        </li>
+        </ul>
+
+    {% endblock %}

@@ -18,11 +18,11 @@
 <body>
 <div class="container-fluid">
 <h1>
-    OpFistula Case Form
+    OpFistula Case Form ( {{ user }} )
 </h1>
     <a href="{% url 'logout' %}">Logout</a>
 
-    <form action="/" method="post" id="submissionform" class="form-horizontal">
+    <form action="{% url 'caseform' %}" method="post" id="submissionform" class="form-horizontal">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Submit" />

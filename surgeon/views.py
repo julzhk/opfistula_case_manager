@@ -4,13 +4,21 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from CaseEntry.models import CaseForm, CaseFormForm, Case
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.models import User
+from surgeon.models import Surgeon
 
 @login_required
 def surgeon_home(request):
+    # a superuser created in python can have no 1-1 surgeon associated
     if request.user.is_authenticated():
         this_user = request.user
-        cases = this_user.surgeon.case_set.all()
+        try:
+            cases = this_user.surgeon.case_set.all()
+        except Surgeon.DoesNotExist:
+            this_user.surgeon = Surgeon()
+            this_user.surgeon.save()
+            this_user.save()
+            cases = this_user.surgeon.case_set.all()
         return render(request,
                       'surgeon_home.html',
                       {
@@ -20,3 +28,7 @@ def surgeon_home(request):
     else:
         return HttpResponse('not known')
 
+def home(request):
+    return render(request,
+              'home.html',
+              {})
