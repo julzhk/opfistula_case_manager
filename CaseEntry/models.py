@@ -2,7 +2,8 @@ from django.forms import ModelForm
 from django.utils import timezone
 from django.db import models
 from django.conf import settings
-from surgeon.models import Surgeon
+from Surgeon.models import Surgeon
+
 DEFAULT_LONG_CHARFIELD_LENGTH = settings.DEFAULT_LONG_CHARFIELD_LENGTH
 DEFAULT_SHORT_CHARFIELD_LENGTH = settings.DEFAULT_SHORT_CHARFIELD_LENGTH
 
@@ -74,8 +75,8 @@ CASE_STATUS_CHOICES = (
     ('PAYMENT DECLINED', 'Payment Declined'),
     ('PAYMENT REVIEW', 'Payment under review'),
     ('PAYMENT SENT', 'Payment Sent'),
-    ('PAYMENT RECEIVED', 'Payment received by surgeon'),
-    ('PAYMENT NOT RECEIVED', 'Payment not recieved by surgeon'),
+    ('PAYMENT RECEIVED', 'Payment received by Surgeon'),
+    ('PAYMENT NOT RECEIVED', 'Payment not recieved by Surgeon'),
     ('PAYMENT CANCELLED', 'Payment cancelled'),
 )
 
@@ -97,7 +98,7 @@ DRAIN_CHOICES = (
 )
 
 
-class CaseForm(models.Model):
+class PatientRecord(models.Model):
     class Meta:
         verbose_name = 'Case Form'
 
@@ -231,7 +232,7 @@ class Case(models.Model):
     status = models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                               choices=CASE_STATUS_CHOICES,
                               default=CASE_STATUS_CHOICES[0][0])
-    caseform = models.ForeignKey(CaseForm)
+    caseform = models.ForeignKey(PatientRecord)
     surgeon = models.ForeignKey(Surgeon, blank=True,null=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
@@ -247,6 +248,6 @@ class Case(models.Model):
         return "%s" % (self.caseform.patient)
 
 
-class CaseFormForm(ModelForm):
+class PatientRecordForm(ModelForm):
     class Meta:
-        model = CaseForm
+        model = PatientRecord

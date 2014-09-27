@@ -1,5 +1,5 @@
 from django.contrib import admin
-from CaseEntry.models import CaseForm, Case
+from CaseEntry.models import PatientRecord, Case
 from django import forms
 from django.contrib import admin
 
@@ -14,8 +14,10 @@ class CaseAdmin(admin.ModelAdmin):
     list_display = ( case_name, caseform, 'created_at', 'status',)
     radio_fields = {"status": admin.VERTICAL}
 
-class CaseFormAdmin(admin.ModelAdmin):
-    list_display = ( 'patient', 'age', 'surgeon',)
 
-admin.site.register(CaseForm,CaseFormAdmin)
+class PatientRecordAdmin(admin.ModelAdmin):
+    list_display = ( 'patient', 'age', 'Surgeon',)
+
+
+admin.site.register(PatientRecord, PatientRecordAdmin)
 admin.site.register(Case,CaseAdmin)
