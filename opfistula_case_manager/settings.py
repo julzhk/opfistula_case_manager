@@ -4,7 +4,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 try:
-    SECRET_KEY = '1234' or os.environ['SECRET_KEY']
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'localdemo')
 except KeyError:
     raise EnvironmentError('Must set SECRET_KEY in environment')
 

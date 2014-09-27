@@ -2,14 +2,15 @@ from django.shortcuts import render
 from django import forms
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
-from CaseEntry.models import CaseForm, CaseFormForm, Case
+from CaseEntry.models import PatientRecord, PatientRecordForm, Case
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from surgeon.models import Surgeon
+from Surgeon.models import Surgeon
+
 
 @login_required
 def surgeon_home(request):
-    # a superuser created in python can have no 1-1 surgeon associated
+    # a superuser created in python can have no 1-1 Surgeon associated
     if request.user.is_authenticated():
         this_user = request.user
         try:
@@ -22,13 +23,14 @@ def surgeon_home(request):
         return render(request,
                       'surgeon_home.html',
                       {
-                        'cases': cases,
-                        'surgeon':this_user
+                          'cases': cases,
+                          'Surgeon': this_user
                       })
     else:
         return HttpResponse('not known')
 
+
 def home(request):
     return render(request,
-              'home.html',
-              {})
+                  'home.html',
+        {})
