@@ -16,7 +16,7 @@ class CaseAdmin(admin.ModelAdmin):
 
 
 class PatientRecordAdmin(admin.ModelAdmin):
-    list_display = ( 'patient', 'age', 'Surgeon',)
+    list_display = ( 'patient', 'age',)
 
 
 admin.site.register(PatientRecord, PatientRecordAdmin)

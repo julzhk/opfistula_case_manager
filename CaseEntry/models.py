@@ -111,9 +111,6 @@ class PatientRecord(models.Model):
     ip = models.CharField(verbose_name='IP Code',
                           blank=True,
                           max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
-    surgeon = models.CharField(verbose_name='Surgeon',
-                               blank=True,
-                               max_length=DEFAULT_LONG_CHARFIELD_LENGTH)
     admission_date = models.DateField(verbose_name='Date of Admission',
                                       null=True,
                                       blank=True)
@@ -233,7 +230,7 @@ class Case(models.Model):
                               choices=CASE_STATUS_CHOICES,
                               default=CASE_STATUS_CHOICES[0][0])
     caseform = models.ForeignKey(PatientRecord)
-    surgeon = models.ForeignKey(Surgeon, blank=True,null=True)
+    surgeon = models.ForeignKey(Surgeon, blank=True, null=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
 
