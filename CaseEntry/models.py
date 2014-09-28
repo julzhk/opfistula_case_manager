@@ -229,7 +229,7 @@ class Case(models.Model):
     status = models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                               choices=CASE_STATUS_CHOICES,
                               default=CASE_STATUS_CHOICES[0][0])
-    caseform = models.ForeignKey(PatientRecord)
+    patientrecord = models.ForeignKey(PatientRecord)
     surgeon = models.ForeignKey(Surgeon, blank=True, null=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
@@ -242,7 +242,7 @@ class Case(models.Model):
         return super(Case, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return "%s" % (self.caseform.patient)
+        return "%s" % (self.patientrecord.patient)
 
 
 class PatientRecordForm(ModelForm):

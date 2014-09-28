@@ -14,7 +14,7 @@ def case_form(request):
         PatientData = PatientRecordForm(request.POST)
         if PatientData.is_valid():
             new_case = Case()
-            new_case.caseform = PatientData.save()
+            new_case.patientrecord = PatientData.save()
             new_case.surgeon = this_user.surgeon
             new_case.save()
             return HttpResponseRedirect('/casesubmitted/')

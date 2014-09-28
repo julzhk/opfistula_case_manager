@@ -5,13 +5,16 @@ from django.contrib import admin
 
 class CaseAdmin(admin.ModelAdmin):
     def case_name(obj):
-        return obj.caseform.patient
-    def caseform(obj):
-        return "<a href='/admin/CaseEntry/caseform/%s'>Form for %s</a>" % (obj.caseform.id,obj.caseform.patient)
+        return obj.patientrecord.patient
+
+    def patientrecord(obj):
+        return "<a href='/admin/CaseEntry/patientrecord/%s'>Form for %s</a>" % (
+        obj.patientrecord.id, obj.patientrecord.patient)
+
     case_name.short_description = 'Patient'
-    caseform.allow_tags= True
+    patientrecord.allow_tags = True
     list_filter = ('status',)
-    list_display = ( case_name, caseform, 'created_at', 'status',)
+    list_display = ( case_name, patientrecord, 'created_at', 'status',)
     radio_fields = {"status": admin.VERTICAL}
 
 
