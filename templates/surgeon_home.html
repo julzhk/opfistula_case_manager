@@ -1,50 +1,52 @@
 {% extends 'base.html' %}
-    {% block body %}
-        <h1>
+{% block body %}
+    <h1>
         Your cases
-        </h1>
-        <p>
-        Cases for {{ surgeon }}
-            {% if surgeon.first_name and surgeon.last_name  %}
-                ({{ surgeon.first_name }}&nbsp;{{ surgeon.last_name}})
-            {% endif %}
-        </p>
-        <div class="table-responsive">
+    </h1>
+    <p>
+        {% if surgeon %}
+            Cases for {{ surgeon }}
+        {% endif %}
+        {% if surgeon.first_name and surgeon.last_name %}
+            ({{ surgeon.first_name }}&nbsp;{{ surgeon.last_name }})
+        {% endif %}
+    </p>
+    <div class="table-responsive">
         <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>
-                Case No
-            </th>
-            <th>
-                Name
-            </th>
-            <th>
-                status
-            </th>
-        </tr>
-        </thead>
-            {%  for case in cases %}
+            <thead>
+            <tr>
+                <th>
+                    Case No
+                </th>
+                <th>
+                    Patient Name
+                </th>
+                <th>
+                    status
+                </th>
+            </tr>
+            </thead>
+            {% for case in cases %}
                 <tr>
-                <td>
-                    <a href="{% url 'case' case.id %}">
-                        {{ case.id }}
-                    </a>
-                </td>
-                <td>
-                {{ case.caseform.patient }}
-                </td>
-                <td>
-                {{ case.status }}
-                </td>
+                    <td>
+                        <a href="{% url 'case' case.id %}">
+                            {{ case.id }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ case.caseform.patient }}
+                    </td>
+                    <td>
+                        {{ case.status }}
+                    </td>
                 </tr>
             {% empty %}
                 None yet
             {% endfor %}
         </table>
-        </div>
-        <a href="{% url 'patientrecord' %}">
+    </div>
+    <a href="{% url 'patientrecord' %}">
         Add new case?
-        </a>
-    {% endblock %}
+    </a>
+{% endblock %}
 </ul>

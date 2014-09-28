@@ -1,5 +1,5 @@
 from django.contrib import admin
-from CaseEntry.models import PatientRecord, Case
+from CaseEntry.models import PatientRecord, Case, CASE_STATUS_CHOICES
 from django import forms
 from django.contrib import admin
 from CaseNotes.models import Note
@@ -8,6 +8,16 @@ from CaseNotes.models import Note
 class CaseNotesInline(admin.TabularInline):
     model = Note
     can_delete = False
+
+
+class CaseAdminForm(forms.ModelForm):
+    def clean_status(self):
+        status_incremental_codes = {cc[0]: i for (i, cc) in enumerate(CASE_STATUS_CHOICES)}
+
+        if status_incremental_codes[self.initial['status']] > \
+                status_incremental_codes[self.cleaned_data['status']]:
+            raise forms.ValidationError('Cannot move status backwards')
+        return self.cleaned_data["status"]
 
 
 class CaseAdmin(admin.ModelAdmin):
@@ -24,6 +34,7 @@ class CaseAdmin(admin.ModelAdmin):
     list_display = ( case_name, patientrecord, 'created_at', 'status',)
     radio_fields = {"status": admin.VERTICAL}
     inlines = [CaseNotesInline, ]
+    form = CaseAdminForm
 
 
 class PatientRecordAdmin(admin.ModelAdmin):

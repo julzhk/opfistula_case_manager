@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django import forms
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
-from CaseEntry.models import PatientRecord, PatientRecordForm, Case
+from CaseEntry.models import PatientRecord, PatientRecordForm, Case, PatientRecordReadOnlyForm
 from django.contrib.auth.decorators import login_required
 
 
@@ -21,9 +21,8 @@ def case_form(request, id=None):
             return HttpResponseRedirect('/casesubmitted/')
     else:
         if id:
-            PatientData = PatientRecordForm(
+            PatientData = PatientRecordReadOnlyForm(
                 instance=PatientRecord.objects.get(pk=int(id)),
-
             )
             form_editable = False
         else:

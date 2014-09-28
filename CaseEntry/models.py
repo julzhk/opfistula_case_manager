@@ -248,3 +248,16 @@ class Case(models.Model):
 class PatientRecordForm(ModelForm):
     class Meta:
         model = PatientRecord
+
+
+class PatientRecordReadOnlyForm(ModelForm):
+    class Meta:
+        model = PatientRecord
+
+    def __init__(self, *args, **kwargs):
+        super(PatientRecordReadOnlyForm, self).__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        if instance and instance.pk:
+            for fieldwidget in self.fields:
+                self.fields[fieldwidget].widget.attrs['readonly'] = True
+                self.fields[fieldwidget].widget.attrs['disabled'] = True

@@ -10,7 +10,7 @@ from Surgeon.models import Surgeon
 
 @login_required
 def surgeon_home(request):
-    # a superuser created in python can have no 1-1 Surgeon associated
+    # a superuser created in python might not have 1-1 Surgeon model associated
     if request.user.is_authenticated():
         this_user = request.user
         try:
