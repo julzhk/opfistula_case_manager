@@ -14,8 +14,9 @@ class CaseAdminForm(forms.ModelForm):
     def clean_status(self):
         status_incremental_codes = {cc[0]: i for (i, cc) in enumerate(CASE_STATUS_CHOICES)}
 
-        if status_incremental_codes[self.initial['status']] > \
-                status_incremental_codes[self.cleaned_data['status']]:
+        if self._changed_data and \
+                        status_incremental_codes[self.initial['status']] > \
+                        status_incremental_codes[self.cleaned_data['status']]:
             raise forms.ValidationError('Cannot move status backwards')
         return self.cleaned_data["status"]
 
