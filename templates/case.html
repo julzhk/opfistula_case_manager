@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h1>
+        Case {{ case.id }}: {{ case }}
+    </h1>
+    <h2>Summary</h2>
+
+    <ul>
+        <li>
+            Name: {{ case.patientrecord.patient }}
+        </li>
+        <li>
+            Age: {{ case.patientrecord.age }}
+        </li>
+        <li>
+            Admission date: {{ case.patientrecord.admission_date }}
+        </li>
+        <li>
+            Surgery date: {{ case.patientrecord.surgery_date }}
+        </li>
+        <li>
+            Discharge date: {{ case.patientrecord.discharge_date }}
+        </li>
+        <li>
+            Status : {{ case.patientrecord.discharge_date }}
+        </li>
+    </ul>
+    <a href="{% url 'viewpatientrecord'  case.id %}">Full Patient Record</a>
+    <h2>
+        Notes
+    </h2>
+    <ul>
+        {% for note in case.note_set.all %}
+            <li>
+                {{ note.message }}
+            </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
