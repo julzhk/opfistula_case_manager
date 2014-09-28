@@ -100,7 +100,7 @@ DRAIN_CHOICES = (
 
 class PatientRecord(models.Model):
     class Meta:
-        verbose_name = 'Case Form'
+        verbose_name = 'Patient Record Form'
 
     patient = models.CharField(verbose_name='Patient Name',
                                max_length=DEFAULT_LONG_CHARFIELD_LENGTH)

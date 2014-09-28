@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <style>
-        .errorlist{
-            color:red;
+        .errorlist {
+            color: red;
         }
+
         .errorlist li {
             list-style-type: none;
         }
@@ -17,16 +18,18 @@
 </head>
 <body>
 <div class="container-fluid">
-<h1>
-    OpFistula Case Form ( {{ user }} )
-</h1>
+    <h1>
+        OpFistula Case Form ( {{ user }} )
+    </h1>
     <a href="{% url 'logout' %}">Logout</a>
 
     <form action="{% url 'patientrecord' %}" method="post" id="submissionform" class="form-horizontal">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit" />
-</form>
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if form_editable %}
+            <input type="submit" value="Submit"/>
+        {% endif %}
+    </form>
 </div>
 </body>
 </html>

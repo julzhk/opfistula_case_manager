@@ -7,8 +7,9 @@ from django.contrib.auth.decorators import login_required
 
 
 @login_required
-def case_form(request):
+def case_form(request, id=None):
     this_user = request.user
+    form_editable = True
     if request.method == 'POST':
         # save the form data
         PatientData = PatientRecordForm(request.POST)
@@ -19,15 +20,25 @@ def case_form(request):
             new_case.save()
             return HttpResponseRedirect('/casesubmitted/')
     else:
-        PatientData = PatientRecordForm()
+        if id:
+            PatientData = PatientRecordForm(
+                instance=PatientRecord.objects.get(pk=int(id)),
+
+            )
+            form_editable = False
+        else:
+            PatientData = PatientRecordForm()
     return render(request, 'case_form.html', {'form': PatientData,
+                                              'form_editable': form_editable,
                                               'user': this_user})
+
 
 def casesubmitted(request):
     return render(request, 'casesubmitted.html')
 
+
 def view_case(request, id):
     id = int(id)
     case = Case.objects.get(id=id)
-    return HttpResponse(str(case))
+    return render(request, 'case.html', {'case': case})
 
