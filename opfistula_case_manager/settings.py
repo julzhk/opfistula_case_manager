@@ -24,6 +24,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'south',
     'CaseEntry',
+    'CaseNotes',
     'Surgeon',
 )
 
