@@ -8,6 +8,9 @@ class Surgeon(models.Model):
     class Meta:
         verbose_name = 'Surgeon'
 
+    def __unicode__(self):
+        return self.user
+
     user = models.OneToOneField(User)
     institution = models.CharField(verbose_name='Institution',
                                    max_length=settings.DEFAULT_LONG_CHARFIELD_LENGTH)
