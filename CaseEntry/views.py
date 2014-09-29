@@ -37,7 +37,10 @@ def casesubmitted(request):
 
 
 def view_case(request, id):
-    id = int(id)
-    case = Case.objects.get(id=id)
-    return render(request, 'case.html', {'case': case})
+    try:
+        id = int(id)
+        case = Case.objects.get(id=id)
+        return render(request, 'case.html', {'case': case})
+    except Case.DoesNotExist:
+        return HttpResponse('case not accessible')
 
