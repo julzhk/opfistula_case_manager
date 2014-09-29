@@ -38,5 +38,12 @@
             {% endfor %}
         </ul>
     {% endif %}
+    <h2>Add note</h2>
+     <form action="{% url 'case' case.pk %}" method="post" id="noteform" class="form-horizontal">
+        {% csrf_token %}
+        {{ noteform.as_p }}
+            <input type="submit" value="Submit"/>
+    </form>
+
 
 {% endblock %}
