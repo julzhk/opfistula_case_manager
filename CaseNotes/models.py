@@ -7,5 +7,5 @@ from CaseEntry.models import TimeStampedModel
 
 class Note(TimeStampedModel):
     message = models.TextField()
-    case = models.ForeignKey(Case)
+    case = models.ForeignKey(Case,null=True)
     commenter = models.ForeignKey(User, null=True, blank=True)

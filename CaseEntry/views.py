@@ -12,7 +12,6 @@ def case_form(request, id=None):
     this_user = request.user
     form_editable = True
     if request.method == 'POST':
-        # save the form data
         PatientData = PatientRecordForm(request.POST)
         if PatientData.is_valid():
             new_case = Case()
@@ -43,9 +42,16 @@ class NoteForm(ModelForm):
         fields = ['message', ]
 
 def view_case(request, id):
+    id = int(id)
     try:
-        id = int(id)
         case = Case.objects.get(id=id)
+        if request.method == 'POST':
+            NoteData = NoteForm(request.POST)
+            if NoteData.is_valid():
+                new_note = NoteData.save()
+                new_note.case=case
+                new_note.commenter=request.user
+                new_note.save()
         noteform= NoteForm()
         return render(request, 'case.html', {'case': case,
                                              'noteform':noteform})

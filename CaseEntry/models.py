@@ -105,6 +105,9 @@ class TimeStampedModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        abstract = True
+
 class PatientRecord(TimeStampedModel):
     class Meta:
         verbose_name = 'Patient Record Form'

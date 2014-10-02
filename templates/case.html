@@ -33,7 +33,7 @@
         <ul>
             {% for note in case.note_set.all %}
                 <li>
-                    {{ note.message }}
+                    {{ note.message }} ({{ note.commenter }})
                 </li>
             {% endfor %}
         </ul>
