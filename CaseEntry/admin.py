@@ -32,7 +32,7 @@ class CaseAdmin(admin.ModelAdmin):
     case_name.short_description = 'Patient'
     patientrecord.allow_tags = True
     list_filter = ('status',)
-    list_display = ( case_name, patientrecord, 'created_at', 'status',)
+    list_display = ( case_name, patientrecord, 'created', 'status',)
     radio_fields = {"status": admin.VERTICAL}
     inlines = [CaseNotesInline, ]
     form = CaseAdminForm

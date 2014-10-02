@@ -97,8 +97,15 @@ DRAIN_CHOICES = (
     ('JP', 'JP'),
 )
 
+class TimeStampedModel(models.Model):
+    """
+    Abstract Base Class Model providing self-updating
+    created & modified fields
+    """
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
-class PatientRecord(models.Model):
+class PatientRecord(TimeStampedModel):
     class Meta:
         verbose_name = 'Patient Record Form'
 
@@ -218,21 +225,12 @@ class PatientRecord(models.Model):
         return "%s" % (self.patient)
 
 
-class Case(models.Model):
+class Case(TimeStampedModel):
     status = models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                               choices=CASE_STATUS_CHOICES,
                               default=CASE_STATUS_CHOICES[0][0])
     patientrecord = models.ForeignKey(PatientRecord)
     surgeon = models.ForeignKey(Surgeon, blank=True, null=True)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
-
-    def save(self, *args, **kwargs):
-        """ On save, update timestamps """
-        if not self.id:
-            self.created_at = timezone.now()
-        self.updated_at = timezone.now()
-        return super(Case, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return "%s" % (self.patientrecord.patient)
