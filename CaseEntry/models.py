@@ -126,7 +126,7 @@ class PatientRecord(models.Model):
     menache_age = models.IntegerField(verbose_name='Age at Menache',
                                       blank=True, null=True)
     main_telephone = models.CharField(verbose_name='Main Telephone number',
-                                      blank=True, null=True,
+                                      blank=True,
                                       max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
     other_telephone = models.TextField(verbose_name='Other Telephone numbers',
                                        blank=True, null=True)
@@ -172,7 +172,6 @@ class PatientRecord(models.Model):
                                                blank=True, )
     treatment_center_travel_cost = models.CharField(
         verbose_name='How much did the journey to the treatment center cost?',
-        null=True,
         blank=True,
         max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
     age_fistula_started = models.IntegerField(verbose_name='Age when the Fistula occurred',
@@ -183,34 +182,28 @@ class PatientRecord(models.Model):
                                          blank=True,
                                          help_text='hrs')
     baby_birth_location = models.CharField(verbose_name='Where was the baby born?',
-                                           null=True,
                                            blank=True,
                                            max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                            choices=BIRTH_LOCATION_CHOICES)
     delivery_type = models.CharField(verbose_name='What type of Delivery?',
-                                     null=True,
                                      blank=True,
                                      max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                      choices=DELIVERY_CHOICES)
     delivery_outcome = models.CharField(verbose_name='Delivery Outcome?',
-                                        null=True,
                                         blank=True,
                                         max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                         choices=DELIVERY_OUTCOME_CHOICES)
     fistula_cause = models.CharField(verbose_name='Cause of Fistula?',
-                                     null=True,
                                      max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                      blank=True,
                                      choices=CAUSE_OF_FISTALA_CHOICES)
     urine_leak_frequency = models.CharField(verbose_name='How often do you leak urine?',
                                             help_text='(Ask the patient)',
-                                            null=True,
                                             blank=True,
                                             max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                             choices=URINE_LEAK_FREQUENCY_CHOICES)
     urine_leak_amount = models.CharField(verbose_name='How much urine do you usually leak?',
                                          help_text='(Ask the patient)',
-                                         null=True,
                                          blank=True,
                                          max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                          choices=URINE_LEAK_AMOUNT_CHOICES)
