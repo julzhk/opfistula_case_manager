@@ -22,7 +22,7 @@
             Discharge date: {{ case.patientrecord.discharge_date }}
         </li>
         <li>
-            Status : {{ case.patientrecord.discharge_date }}
+            Status : {{ case.status }}
         </li>
     </ul>
     <a href="{% url 'viewpatientrecord'  case.id %}">Full Patient Record</a>
@@ -38,10 +38,15 @@
             {% endfor %}
         </ul>
     {% endif %}
-    <h2>Add note</h2>
-     <form action="{% url 'case' case.pk %}" method="post" id="noteform" class="form-horizontal">
+
+    <form action="{% url 'case' case.pk %}" method="post" id="noteform" class="form-horizontal">
         {% csrf_token %}
-        {{ noteform.as_p }}
+        {% if user.is_superuser %}
+            <h2>Change Status</h2>
+            {{ statusform }}
+        {% endif %}
+         <h2>Add note</h2>
+         {{ noteform.as_p }}
             <input type="submit" value="Submit"/>
     </form>
 

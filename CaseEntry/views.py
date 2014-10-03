@@ -36,6 +36,11 @@ def casesubmitted(request):
     return render(request, 'casesubmitted.html')
 
 
+class StatusForm(ModelForm):
+    class Meta:
+        model = Case
+        fields = ['status',]
+
 class NoteForm(ModelForm):
     class Meta:
         model = Note
@@ -43,18 +48,26 @@ class NoteForm(ModelForm):
 
 def view_case(request, id):
     id = int(id)
+    this_user = request.user
     try:
         case = Case.objects.get(id=id)
         if request.method == 'POST':
             NoteData = NoteForm(request.POST)
+            StatusData = StatusForm(request.POST)
+            if StatusData.is_valid() and this_user.is_superuser:
+                case.status = StatusData.cleaned_data['status']
+                case.save()
             if NoteData.is_valid():
                 new_note = NoteData.save()
                 new_note.case=case
-                new_note.commenter=request.user
+                new_note.commenter=this_user
                 new_note.save()
         noteform= NoteForm()
+        statusform = StatusForm(instance=case)
         return render(request, 'case.html', {'case': case,
-                                             'noteform':noteform})
+                                             'user':this_user,
+                                             'noteform':noteform,
+                                             'statusform':statusform})
     except Case.DoesNotExist:
         return HttpResponse('case not accessible')
 

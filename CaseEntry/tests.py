@@ -54,6 +54,7 @@ class TestFixture(TestCase):
         self.adminuser = User.objects.create_user('admin', 'admin@test.com', 'pass')
         self.adminuser.save()
         self.adminuser.is_staff = True
+        self.adminuser.is_superuser = True
         self.adminuser.save()
         self.surgeon = Surgeon.objects.create(
             institution = 'abc',
@@ -127,3 +128,40 @@ class AdminViews(TestFixture):
         response = self.c.get('/caselist/')
         cases = response.context['cases']
         self.assertEquals(len(cases), 2)
+
+    def test_change_status_admin(self):
+        """only admins can change a status."""
+        self.c.login(username='admin', password='pass')
+        case1 = Case.objects.get(pk=1)
+        self.assertEquals(case1.status , 'NEW')
+        response = self.c.post('/case/1/',{'status':'APPROVED'})
+        self.assertEquals(response.status_code,200)
+        case1 = Case.objects.get(pk=1)
+        self.assertEquals(case1.status , 'APPROVED')
+
+    def test_change_status_non_admin(self):
+        """CURRENTLY only admins can change a status.
+        # todo : surgeons can change to some statuses, but not others
+        """
+        self.c.login(username='admin', password='pass')
+        case1 = Case.objects.get(pk=1)
+        self.assertEquals(case1.status , 'NEW')
+        response = self.c.post('/case/1/',{'status':'APPROVED'})
+        self.assertEquals(response.status_code,200)
+        case1 = Case.objects.get(pk=1)
+        self.assertEquals(case1.status , 'APPROVED')
+
+        user2 = User.objects.create_user('user2', 'user2@test.com', 'pass')
+        user2.save()
+        surgeon2 = Surgeon.objects.create(institution = 'abc',user= user2)
+        case1.surgeon = surgeon2
+        case1.save()
+        # assign the case to surgeon2
+        self.assertEquals(case1.surgeon,surgeon2)
+        # surgeon2 shouldnt be able to update the status
+        self.c.login(username='user2', password='pass')
+        response = self.c.post('/case/1/',{'status':'COMPLETED'})
+        case1 = Case.objects.get(pk=1)
+        self.assertNotEqual(case1.status , 'COMPLETED')
+        # should still be..
+        self.assertEquals(case1.status , 'APPROVED')
