@@ -13,4 +13,5 @@ class Surgeon(models.Model):
 
     user = models.OneToOneField(User)
     institution = models.CharField(verbose_name='Institution',
+                                   blank=True,
                                    max_length=settings.DEFAULT_LONG_CHARFIELD_LENGTH)

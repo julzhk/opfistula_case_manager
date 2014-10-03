@@ -14,15 +14,20 @@ def surgeon_home(request):
     if request.user.is_authenticated():
         this_user = request.user
         try:
-            cases = this_user.surgeon.case_set.all()
+            thissurgeon = this_user.surgeon
         except Surgeon.DoesNotExist:
             this_user.surgeon = Surgeon()
             this_user.surgeon.save()
             this_user.save()
+        # staff see every case; surgeons, just their own
+        if this_user.is_staff or this_user.is_superuser:
+            cases = Case.objects.all()
+        else:
             cases = this_user.surgeon.case_set.all()
         return render(request,
                       'surgeon_home.html',
                       {
+                          'user': this_user,
                           'cases': cases,
                           'Surgeon': this_user
                       })

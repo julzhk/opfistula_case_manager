@@ -1,20 +1,27 @@
 {% extends 'base.html' %}
 {% block body %}
-    <h1>
-        Your cases
-    </h1>
-    <p>
-        {% if surgeon %}
-            Cases for {{ surgeon }}
-        {% endif %}
-        {% if surgeon.first_name and surgeon.last_name %}
-            ({{ surgeon.first_name }}&nbsp;{{ surgeon.last_name }})
-        {% endif %}
+    <h1>{% if user.is_superuser %}
+            All Cases
+        {% else %}
+            {% if surgeon %}
+                Cases for {{ surgeon }}
+            {% endif %}
+            <p>
+            {% if surgeon.first_name and surgeon.last_name %}
+                ({{ surgeon.first_name }}&nbsp;{{ surgeon.last_name }})
+            {% endif %}
     </p>
+        {% endif %}
+    </h1>
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
             <tr>
+                {% if user.is_superuser %}
+                    <th>
+                        Surgeon
+                    </th>
+                {% endif %}
                 <th>
                     Case No
                 </th>
@@ -28,13 +35,19 @@
             </thead>
             {% for case in cases %}
                 <tr>
+                    {% if user.is_superuser %}
+                        <td>
+                            {{ case.surgeon }}
+                        </td>
+                    {% endif %}
+
                     <td>
                         <a href="{% url 'case' case.id %}">
                             {{ case.id }}
                         </a>
                     </td>
                     <td>
-                        {{ case.caseform.patient }}
+                        {{ case.patientrecord.patient }}
                     </td>
                     <td>
                         {{ case.status }}

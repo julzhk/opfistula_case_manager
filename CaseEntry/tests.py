@@ -101,3 +101,29 @@ class ViewPatientRecord(TestFixture):
         response = self.c.get('/viewcase/1/')
         self.assertFalse(response.context['form_editable'])
         self.assertTrue('my_new_test_patient' in response.content,response.content)
+
+class AdminViews(TestFixture):
+    # we have a record & an admin. Lets add another surgeon & give them a patient
+    def test_add_two_surgeons_and_patients(self):
+        user2 = User.objects.create_user('user2', 'user2@test.com', 'pass')
+        user2.save()
+        surgeon2 = Surgeon.objects.create(institution = 'abc',user= user2)
+        patientrecord2 = PatientRecord.objects.create(
+            patient='my_new_test_patient2',
+            age=23,
+            ip='ipcode2',
+            admission_date='2014-6-14',
+            surgery_date='2014-8-24',
+        )
+        case2 = Case(patientrecord=patientrecord2,surgeon=surgeon2)
+        case2.save()
+        # now user2 should see just one record, but adminuser should see two
+        self.c.login(username='user2', password='pass')
+        response = self.c.get('/caselist/')
+        cases = response.context['cases']
+        self.assertEquals(len(cases), 1)
+        # admin user
+        self.c.login(username='admin', password='pass')
+        response = self.c.get('/caselist/')
+        cases = response.context['cases']
+        self.assertEquals(len(cases), 2)
