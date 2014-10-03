@@ -10,6 +10,19 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from django.test import Client
 
+def create_a_surgeon_record(name,
+                            is_staff=True,
+                            is_superuser=False,
+                            institution='abc clinic'):
+    user = User.objects.create_user(name, '%s@test.com' % name, 'pass')
+    user.save()
+    user.is_staff = is_staff
+    user.is_superuser = is_superuser
+    user.save()
+    surgeon = Surgeon.objects.create(
+        institution = institution,
+        user= user)
+
 class PatientrecordPageTest(TestCase):
     def test_patientrecord_url_resolves(self):
         # use django's 'resolve' fn to see if the path & view are the same
@@ -165,3 +178,21 @@ class AdminViews(TestFixture):
         self.assertNotEqual(case1.status , 'COMPLETED')
         # should still be..
         self.assertEquals(case1.status , 'APPROVED')
+
+    def test_show_all_surgeons_page(self):
+        """
+        http://127.0.0.1:8000/surgeons/
+        """
+        self.c.login(username='admin', password='pass')
+        response = self.c.get('/surgeons/')
+        self.assertEquals(response.status_code,200)
+        surgeons = response.context['surgeon_list']
+        self.assertEquals(len(surgeons),1)
+        create_a_surgeon_record(name='surgeon2')
+        response = self.c.get('/surgeons/')
+        surgeons = response.context['surgeon_list']
+        self.assertEquals(len(surgeons),2)
+#         page not visible to surgeons, only super admins
+        self.c.login(username='surgeon2', password='pass')
+        response = self.c.get('/surgeons/')
+        self.assertNotEquals(response.status_code,200,response.status_code)

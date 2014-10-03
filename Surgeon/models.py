@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 
 class Surgeon(models.Model):
@@ -15,3 +16,5 @@ class Surgeon(models.Model):
     institution = models.CharField(verbose_name='Institution',
                                    blank=True,
                                    max_length=settings.DEFAULT_LONG_CHARFIELD_LENGTH)
+    def get_absolute_url(self):
+        return reverse('surgeon.views.surgeon_details', args=[str(self.id)])

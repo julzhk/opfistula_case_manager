@@ -22,7 +22,7 @@
             Discharge date: {{ case.patientrecord.discharge_date }}
         </li>
         <li>
-            Status : {{ case.status }}
+            Status : {{ case.get_status_display }}
         </li>
     </ul>
     <a href="{% url 'viewpatientrecord'  case.id %}">Full Patient Record</a>

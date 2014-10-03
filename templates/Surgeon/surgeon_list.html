@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h2>All users</h2>
+    <ul>
+        {% for surgeon in surgeon_list %}
+
+            <li>{{ surgeon }} / {{ surgeon.institution }}
+            {% if surgeon.user.is_superuser %}
+            (Administrator)
+            {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

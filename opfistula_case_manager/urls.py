@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from CaseEntry.views import case_form
 from django.contrib import admin
-
+from Surgeon.views import SurgeonList,SurgeonDetailView
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -17,6 +17,9 @@ urlpatterns = patterns('',
                        url(r'^viewcase/(?P<id>\d)/$', 'CaseEntry.views.case_form', name='viewpatientrecord'),
                        url(r'^case/(?P<id>\d)/$', 'CaseEntry.views.view_case', name='case'),
                        url(r'^casesubmitted/', 'CaseEntry.views.casesubmitted', name='casesubmitted'),
+
+                       url(r'^surgeondetails/(?P<pk>\d)/$', SurgeonDetailView.as_view(), name='surgeon_details'),
+                       url(r'^surgeons/$', SurgeonList.as_view()),
                        url(r'^$', 'Surgeon.views.home', name='home'),
                        url(r'^admin/', include(admin.site.urls)),
 

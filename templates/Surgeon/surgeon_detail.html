@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h2>Surgeon Details</h2>
+    <ul>
+        <li>
+            {{ surgeon }},
+        </li>
+            {% if surgeon.user.is_superuser %}
+                <li>
+                admin user
+                </li>
+            {% endif  %}
+        <li>email:
+            {{ surgeon.user.email}},
+        </li>
+    </ul>
+{% endblock %}
