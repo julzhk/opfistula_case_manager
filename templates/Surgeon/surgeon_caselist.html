@@ -1,0 +1,49 @@
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            {% if surgeon.is_superuser %}
+                <th>
+                    Surgeon
+                </th>
+            {% endif %}
+            <th>
+                Case No
+            </th>
+            <th>
+                Patient Name
+            </th>
+            <th>
+                status
+            </th>
+        </tr>
+        </thead>
+        {% for case in cases %}
+            <tr>
+                {% if surgeon.is_superuser %}
+                    <td>
+                        <a href="{% url 'surgeon_details' case.surgeon.pk %}">
+                            {{ case.surgeon }}
+                        </a>
+                    </td>
+                {% endif %}
+
+                <td>
+                    <a href="{% url 'case' case.id %}">
+                        {{ case.id }}
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'viewpatientrecord'  case.id %}">
+                        {{ case.patientrecord.patient }}
+                    </a>
+                </td>
+                <td>
+                    {{ case.get_status_display }}
+                </td>
+            </tr>
+        {% empty %}
+            None yet
+        {% endfor %}
+    </table>
+</div>

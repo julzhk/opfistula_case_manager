@@ -1,6 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% extends 'base.html' %}
+{% block extrehead %}
+    {#todo : move to base.html #}
     <title>OpFistula Case Entry</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
@@ -15,9 +15,9 @@
             list-style-type: none;
         }
     </style>
-</head>
-<body>
-<div class="container-fluid">
+{% endblock %}
+{% block body %}
+    <div class="container-fluid">
     <h1>
         OpFistula Case Form ( {{ user }} )
     </h1>
@@ -31,5 +31,4 @@
         {% endif %}
     </form>
 </div>
-</body>
-</html>
+{% endblock %}

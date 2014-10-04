@@ -18,5 +18,5 @@
             {{ surgeon.user.email }}
         </li>
     </ul>
-    {% include "surgeon_home.html"  with cases=surgeon.case_set.all user=surgeon %}
+    {% include "surgeon/surgeon_caselist.html"  with cases=surgeon.case_set.all user=surgeon %}
 {% endblock %}

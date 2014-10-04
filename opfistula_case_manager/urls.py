@@ -23,7 +23,7 @@ urlpatterns = patterns('',
 
                        url(r'^surgeondetails/(?P<pk>\d)/$', SurgeonDetailView.as_view(), name='surgeon_details'),
 
-                       url(r'^surgeons/$', SurgeonList.as_view()),
+                       url(r'^surgeons/$', SurgeonList.as_view(), name='surgeons'),
                        # url(r'surgeon/add/$', SurgeonCreate.as_view(), name='surgeon_add'),
                        # url(r'surgeon/(?P<pk>[0-9]+)/$', SurgeonUpdate.as_view() ),
                        # url(r'surgeon/(?P<pk>[0-9]+)/delete/$', SurgeonDelete.as_view()),
