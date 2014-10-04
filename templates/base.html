@@ -32,9 +32,11 @@
                 <li>
                     <a href="{% url 'patientrecord' %}">Add new case?</a>
                 </li>
-                <li>
-                    <a href="{% url 'surgeons' %}">Surgeon List</a>
-                </li>
+                {% if user.is_superuser %}
+                    <li>
+                        <a href="{% url 'surgeons' %}">Surgeon List</a>
+                    </li>
+                {% endif %}
 
             </ul>
             <form class="navbar-form navbar-left" role="search">

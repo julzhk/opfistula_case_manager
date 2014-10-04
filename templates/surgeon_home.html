@@ -1,16 +1,12 @@
 {% extends 'base.html' %}
 {% block body %}
+    <div class="container-fluid">
     <h1 xmlns="http://www.w3.org/1999/html">{% if surgeon.is_superuser %}
         All Cases
     {% else %}
         {% if surgeon %}
             Cases for {{ surgeon }}
         {% endif %}
-        <p>
-            {% if surgeon.first_name and surgeon.last_name %}
-                ({{ surgeon.first_name }}&nbsp;{{ surgeon.last_name }})
-            {% endif %}
-        </p>
     {% endif %}
     </h1>
     <div class="table-responsive">
@@ -19,5 +15,6 @@
     <a href="{% url 'patientrecord' %}">
         Add new case?
     </a>
+    </div>
 {% endblock %}
 </ul>
