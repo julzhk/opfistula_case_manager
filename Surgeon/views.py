@@ -10,47 +10,20 @@ from django.views.generic import ListView
 from django.http import Http404
 from django.views.generic import DetailView
 from django.utils import timezone
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.core.urlresolvers import reverse_lazy
 
-@login_required
-def surgeon_home(request):
-    # a superuser created in python might not have 1-1 Surgeon model associated
-    if request.user.is_authenticated():
-        this_user = request.user
-        try:
-            thissurgeon = this_user.surgeon
-        except Surgeon.DoesNotExist:
-            this_user.surgeon = Surgeon()
-            this_user.surgeon.save()
-            this_user.save()
-        # staff see every case; surgeons, just their own
-        if this_user.is_staff or this_user.is_superuser:
-            cases = Case.objects.all()
-        else:
-            cases = this_user.surgeon.case_set.all()
-        return render(request,
-                      'surgeon_home.html',
-                      {
-                          'user': this_user,
-                          'cases': cases,
-                          'Surgeon': this_user
-                      })
-    else:
-        return HttpResponse('not known')
-
-
-def surgeon_details(request,id):
-    return render(request,
-                  'home.html',
-        {})
 
 def home(request):
     return render(request,
                   'home.html',
         {})
 
+
 class SurgeonList(ListView):
     model = Surgeon
     context_object_name = 'surgeon_list'
+
     def get_queryset(self):
         qs = self.model.objects.all()
         this_user = self.request.user
@@ -61,6 +34,22 @@ class SurgeonList(ListView):
             qs = qs.filter(user__username__icontains=search)
         return qs
 
+
 class SurgeonDetailView(DetailView):
     model = Surgeon
     queryset = Surgeon.objects.all()
+
+
+class SurgeonCreate(CreateView):
+    model = Surgeon
+    fields = '__all__'
+
+
+class SurgeonUpdate(UpdateView):
+    model = Surgeon
+    fields = ['institution']
+
+
+class SurgeonDelete(DeleteView):
+    model = Surgeon
+    success_url = reverse_lazy('surgeon-list')

@@ -16,5 +16,6 @@ class Surgeon(models.Model):
     institution = models.CharField(verbose_name='Institution',
                                    blank=True,
                                    max_length=settings.DEFAULT_LONG_CHARFIELD_LENGTH)
+
     def get_absolute_url(self):
-        return reverse('surgeon.views.surgeon_details', args=[str(self.id)])
+        return reverse('surgeon.views.SurgeonDetailView', args=[str(self.id)])
