@@ -4,10 +4,13 @@
     <ul>
         {% for surgeon in surgeon_list %}
 
-            <li>{{ surgeon }} / {{ surgeon.institution }}
-            {% if surgeon.user.is_superuser %}
-            (Administrator)
+            <li>
+                <a href="{% url 'surgeon_details' surgeon.pk %}">
+                    {{ surgeon }} / {{ surgeon.institution }}
+                    {% if surgeon.user.is_superuser %}
+                        (Administrator)
             {% endif %}
+                </a>
             </li>
         {% endfor %}
     </ul>

@@ -22,6 +22,8 @@ def create_a_surgeon_record(name,
     surgeon = Surgeon.objects.create(
         institution = institution,
         user= user)
+    return surgeon
+
 
 class PatientrecordPageTest(TestCase):
     def test_patientrecord_url_resolves(self):
@@ -196,3 +198,18 @@ class AdminViews(TestFixture):
         self.c.login(username='surgeon2', password='pass')
         response = self.c.get('/surgeons/')
         self.assertNotEquals(response.status_code,200,response.status_code)
+
+
+class SurgeonView(TestFixture):
+    def test_add_new_case_from_surgeon_details_page(self):
+        surgeon2 = create_a_surgeon_record('surgeon2')
+        c = self.c
+        c.login(username='admin', password='pass')
+        response = c.get('/surgeondetails/2/')
+        contextsurgeon = response.context['surgeon']
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(contextsurgeon, surgeon2)
+        addnewcaseresponse = c.get('/submitcase/2/')
+        # todo : not implemented yet!
+        # contextsurgeon = addnewcaseresponse.context['surgeon']
+        # self.assertEquals(contextsurgeon,surgeon2)

@@ -5,25 +5,18 @@
         <li>
             {{ surgeon }},
         </li>
-            {% if surgeon.user.is_superuser %}
                 <li>
-                admin user
+                    Status:
+                    {% if surgeon.user.is_superuser %}
+                        admin user
+                    {% else %}
+                        Surgeon
+                    {% endif %}
                 </li>
-            {% endif  %}
+
         <li>email:
             {{ surgeon.user.email }}
         </li>
-        <li>
-            Cases:
-            <ul>
-                {% for case in surgeon.case_set.all %}
-                    <li>
-                        <a href="{% url 'case' case.pk %}">
-                            {{ case }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </li>
     </ul>
+    {% include "surgeon_home.html"  with cases=surgeon.case_set.all user=surgeon %}
 {% endblock %}
