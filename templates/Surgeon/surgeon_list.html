@@ -2,16 +2,48 @@
 {% block body %}
     <h2>All users</h2>
     <ul>
-        {% for surgeon in surgeon_list %}
 
-            <li>
-                <a href="{% url 'surgeon_details' surgeon.pk %}">
-                    {{ surgeon }} / {{ surgeon.institution }}
-                    {% if surgeon.user.is_superuser %}
-                        (Administrator)
-            {% endif %}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        User Type
+                    </th>
+                    <th>
+                        Institution
+                    </th>
+                    <th>
+                        Number of cases
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for surgeon in surgeon_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'surgeon_details' surgeon.pk %}">
+                                {{ surgeon }}
+                            </a>
+                        </td>
+                        <td>
+                            {% if surgeon.user.is_superuser %}
+                                Administrator
+                            {% else %}
+                                Surgeon
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ surgeon.institution }}
+                        </td>
+                        <td>
+                            {{ surgeon.case_set.all|length }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
 {% endblock %}
