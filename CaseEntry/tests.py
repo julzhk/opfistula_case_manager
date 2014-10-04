@@ -213,3 +213,10 @@ class SurgeonView(TestFixture):
         # todo : not implemented yet!
         # contextsurgeon = addnewcaseresponse.context['surgeon']
         # self.assertEquals(contextsurgeon,surgeon2)
+
+
+class TestLoggedInOnly(TestFixture):
+    def test_anonuser_barred(self):
+        for endpoint in ['submitcase', 'caselist', 'surgeons', 'cases']:
+            response = self.c.get('/%s/' % endpoint, e)
+            self.assertEqual(response.status_code, 404, endpoint)

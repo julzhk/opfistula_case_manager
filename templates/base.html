@@ -45,6 +45,11 @@
             </form>
             <ul class="nav navbar-nav navbar-right">
                 <li>
+                    <a href="{% url 'surgeon_details' user.pk %}">
+                        Welcome: {{ user }}
+                    </a>
+                </li>
+                <li>
                     <a href="{% url 'logout' %}">Logout</a>
                 </li>
             </ul>

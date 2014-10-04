@@ -19,10 +19,8 @@
 {% block body %}
     <div class="container-fluid">
     <h1>
-        OpFistula Case Form ( {{ user }} )
+        OpFistula Case Form
     </h1>
-    <a href="{% url 'logout' %}">Logout</a>
-
     <form action="{% url 'patientrecord' %}" method="post" id="submissionform" class="form-horizontal">
         {% csrf_token %}
         {{ form.as_p }}
