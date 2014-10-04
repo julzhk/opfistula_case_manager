@@ -11,7 +11,19 @@
                 </li>
             {% endif  %}
         <li>email:
-            {{ surgeon.user.email}},
+            {{ surgeon.user.email }}
+        </li>
+        <li>
+            Cases:
+            <ul>
+                {% for case in surgeon.case_set.all %}
+                    <li>
+                        <a href="{% url 'case' case.pk %}">
+                            {{ case }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
         </li>
     </ul>
 {% endblock %}

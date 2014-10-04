@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
-    {% block body %}
-        <h1>
+{% block body %}
+    <h1>
         OpFistula
-        </h1>
-        <ul>
-            <li>
-                <a href="{% url 'caselist' %}">Your cases</a>
-            </li>
+    </h1>
+    <ul>
+        <li>
+            <a href="{% url 'caselist' %}">Cases</a>
+        </li>
         <li>
             <a href="{% url 'patientrecord' %}">Add new case?</a>
         </li>
-            <li>
-                <a href="{% url 'logout' %}">Logout</a>
-            </li>
-        </ul>
+        <li>
+            <a href="{% url 'logout' %}">Logout</a>
+        </li>
+    </ul>
 
-    {% endblock %}
+{% endblock %}
