@@ -217,6 +217,7 @@ class SurgeonView(TestFixture):
 
 class TestLoggedInOnly(TestFixture):
     def test_anonuser_barred(self):
-        for endpoint in ['submitcase', 'caselist', 'surgeons', 'cases']:
-            response = self.c.get('/%s/' % endpoint, e)
-            self.assertEqual(response.status_code, 404, endpoint)
+        for endpoint in ['submitcase', 'caselist', 'surgeons', 'caselist']:
+            response = self.c.get('/%s/' % endpoint)
+            print endpoint, ',', response.status_code
+            self.assertEqual(response.status_code, 302, '%s, %s' % (endpoint, response.status_code))
