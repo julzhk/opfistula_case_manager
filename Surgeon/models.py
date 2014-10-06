@@ -19,3 +19,10 @@ class Surgeon(models.Model):
 
     def get_absolute_url(self):
         return reverse('surgeon.views.SurgeonDetailView', args=[str(self.id)])
+
+    def type(self):
+        if self.user.is_superuser:
+            return 'Administrator'
+        elif self.user.is_staff:
+            return 'Surgeon'
+        return 'Non-user'

@@ -31,11 +31,7 @@
                             </a>
                         </td>
                         <td>
-                            {% if surgeon.user.is_superuser %}
-                                Administrator
-                            {% else %}
-                                Surgeon
-                            {% endif %}
+                            {{ surgeon.type }}
                         </td>
                         <td>
                             {{ surgeon.institution }}
