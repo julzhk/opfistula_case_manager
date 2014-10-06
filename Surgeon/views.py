@@ -12,7 +12,10 @@ from django.views.generic import DetailView
 from django.utils import timezone
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
-
+from django.contrib.auth.forms import UserCreationForm
+from django import forms
+from django.views.generic.edit import CreateView
+from django.forms import ModelForm
 
 def home(request):
     return render(request,
@@ -51,15 +54,32 @@ class SurgeonDetailView(DetailView):
         context['path'] = self.request.META['PATH_INFO']
         return context
 
+class SurgeonForm(ModelForm):
+    class Meta:
+        model = Surgeon
+        fields = ('institution',)
 
 class SurgeonCreate(CreateView):
     model = Surgeon
-    fields = '__all__'
+    fields = ('institution',)
+
+    def post(self, request, *args, **kwargs):
+        userform = UserCreationForm(request.POST)
+        surgeonform = SurgeonForm(request.POST)
+        if userform.is_valid() and surgeonform.is_valid():
+            userform.save()
+            s = surgeonform.instance
+            s.user = userform.instance
+            s.save()
+            return HttpResponseRedirect('/success/')
+        return super(SurgeonCreate, self).post(self,request,*args,**kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(SurgeonCreate, self).get_context_data(**kwargs)
         context['path'] = self.request.META['PATH_INFO']
+        context['userform'] = UserCreationForm
         return context
+
 
 
 class SurgeonUpdate(UpdateView):
@@ -78,4 +98,5 @@ class SurgeonDelete(DeleteView):
     def get_context_data(self, **kwargs):
         context = super(SurgeonDelete, self).get_context_data(**kwargs)
         context['path'] = self.request.META['PATH_INFO']
+
         return context
