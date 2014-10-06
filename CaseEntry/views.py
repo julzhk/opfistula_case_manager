@@ -9,6 +9,8 @@ from CaseNotes.models import Note
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
 from Surgeon.models import Surgeon
+from django.core.urlresolvers import reverse_lazy
+from django.contrib import messages
 
 
 @login_required
@@ -22,7 +24,8 @@ def case_form(request, id=None):
             new_case.patientrecord = PatientData.save()
             new_case.surgeon = this_user.surgeon
             new_case.save()
-            return HttpResponseRedirect('/casesubmitted/')
+            messages.add_message(request, messages.INFO, '%s: new case created' % new_case.patientrecord.patient)
+            return HttpResponseRedirect(reverse_lazy('caselist'))
     else:
         if id:
             PatientData = PatientRecordReadOnlyForm(
@@ -37,8 +40,6 @@ def case_form(request, id=None):
                                               'user': this_user})
 
 
-def casesubmitted(request):
-    return render(request, 'casesubmitted.html')
 
 
 class StatusForm(ModelForm):

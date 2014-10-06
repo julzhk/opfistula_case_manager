@@ -1,18 +1,16 @@
 {% extends 'base.html' %}
 {% block body %}
-        <div class="container-fluid">
-    <h1>
-        Create Surgeon
-    </h1>
-    <form action="{% url 'surgeon_add' %}" method="post" id="submissionform" class="form-horizontal">
-        {% csrf_token %}
-        {{ form.as_p  }}
-        {{ userform.as_p }}
+    <div class="container-fluid">
+        <h1>
+            Create Surgeon Record
+        </h1>
 
+        <form action="{% url 'surgeon_add' %}" method="post" id="submissionform" class="form-horizontal">
+            {% csrf_token %}
+            {{ form.as_p }}
+            {{ personalinfoform.as_p }}
+            {{ userform.as_p }}
             <input type="submit" value="Submit"/>
-    </form>
-</div>
-
-
-
+        </form>
+    </div>
 {% endblock %}

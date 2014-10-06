@@ -13,9 +13,11 @@ from django.utils import timezone
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 from django import forms
 from django.views.generic.edit import CreateView
-from django.forms import ModelForm
+from django.forms import ModelForm, Form
+
 
 def home(request):
     return render(request,
@@ -59,6 +61,13 @@ class SurgeonForm(ModelForm):
         model = Surgeon
         fields = ('institution',)
 
+
+class SurgeonPersonalInfoForm(Form):
+    first_name = forms.CharField(label='Surgeon First name', max_length=100)
+    last_name = forms.CharField(label='Surgeon First name', max_length=100)
+    email = forms.EmailField()
+
+
 class SurgeonCreate(CreateView):
     model = Surgeon
     fields = ('institution',)
@@ -66,18 +75,27 @@ class SurgeonCreate(CreateView):
     def post(self, request, *args, **kwargs):
         userform = UserCreationForm(request.POST)
         surgeonform = SurgeonForm(request.POST)
-        if userform.is_valid() and surgeonform.is_valid():
+        personal_info = SurgeonPersonalInfoForm(request.POST)
+        if userform.is_valid() and surgeonform.is_valid() and personal_info.is_valid():
             userform.save()
             s = surgeonform.instance
             s.user = userform.instance
+            for i in personal_info.cleaned_data:
+                s.user.__setattr__(i, personal_info.cleaned_data[i])
+            s.user.is_staff = True
+            s.user.save()
             s.save()
-            return HttpResponseRedirect('/success/')
-        return super(SurgeonCreate, self).post(self,request,*args,**kwargs)
+            messages.add_message(request, messages.INFO, '%s: created!' % s.user.username)
+            return HttpResponseRedirect(reverse_lazy('surgeons'))
+        messages.add_message(request, messages.INFO, 'Some error in data')
+        return HttpResponseRedirect(reverse_lazy('surgeon_add'))
+
 
     def get_context_data(self, **kwargs):
         context = super(SurgeonCreate, self).get_context_data(**kwargs)
         context['path'] = self.request.META['PATH_INFO']
-        context['userform'] = UserCreationForm
+        context['userform'] = UserCreationForm(initial={'username': 'name'})
+        context['personalinfoform'] = SurgeonPersonalInfoForm()
         return context
 
 

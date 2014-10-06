@@ -10,15 +10,16 @@ class Surgeon(models.Model):
         verbose_name = 'Surgeon'
 
     def __unicode__(self):
-        return self.user
+        try:
+            return str(self.user)
+        except AttributeError:
+            return 'none'
 
     user = models.OneToOneField(User)
     institution = models.CharField(verbose_name='Institution',
                                    blank=True,
                                    max_length=settings.DEFAULT_LONG_CHARFIELD_LENGTH)
 
-    def get_absolute_url(self):
-        return reverse('surgeon.views.SurgeonDetailView', args=[str(self.id)])
 
     def type(self):
         if self.user.is_superuser:
