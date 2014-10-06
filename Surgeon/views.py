@@ -17,7 +17,10 @@ from django.core.urlresolvers import reverse_lazy
 def home(request):
     return render(request,
                   'home.html',
-        {})
+        {
+            'path':request.META['PATH_INFO']
+        }
+    )
 
 
 class SurgeonList(ListView):
@@ -34,22 +37,45 @@ class SurgeonList(ListView):
             qs = qs.filter(user__username__icontains=search)
         return qs
 
+    def get_context_data(self, **kwargs):
+        context = super(SurgeonList, self).get_context_data(**kwargs)
+        context['path'] = self.request.META['PATH_INFO']
+        return context
 
 class SurgeonDetailView(DetailView):
     model = Surgeon
     queryset = Surgeon.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(SurgeonDetailView, self).get_context_data(**kwargs)
+        context['path'] = self.request.META['PATH_INFO']
+        return context
 
 
 class SurgeonCreate(CreateView):
     model = Surgeon
     fields = '__all__'
 
+    def get_context_data(self, **kwargs):
+        context = super(SurgeonCreate, self).get_context_data(**kwargs)
+        context['path'] = self.request.META['PATH_INFO']
+        return context
+
 
 class SurgeonUpdate(UpdateView):
     model = Surgeon
     fields = ['institution']
+    def get_context_data(self, **kwargs):
+        context = super(SurgeonUpdate, self).get_context_data(**kwargs)
+        context['path'] = self.request.META['PATH_INFO']
+        return context
 
 
 class SurgeonDelete(DeleteView):
     model = Surgeon
     success_url = reverse_lazy('surgeon-list')
+
+    def get_context_data(self, **kwargs):
+        context = super(SurgeonDelete, self).get_context_data(**kwargs)
+        context['path'] = self.request.META['PATH_INFO']
+        return context

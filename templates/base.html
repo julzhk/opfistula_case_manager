@@ -28,16 +28,15 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="{% url 'caselist' %}">Cases</a></li>
-                <li>
+                <li class="{% if path == '/caselist/' %}active{% endif %}"><a href="{% url 'caselist' %}">Cases</a></li>
+                <li class="{% if path == '/submitcase/' %}active{% endif %}">
                     <a href="{% url 'patientrecord' %}">Add new case?</a>
                 </li>
                 {% if user.is_superuser %}
-                    <li>
+                    <li class="{% if path == '/surgeons/' %}active{% endif %}">
                         <a href="{% url 'surgeons' %}">Surgeon List</a>
                     </li>
                 {% endif %}
-
             </ul>
             <form class="navbar-form navbar-left" role="search">
                 <div class="form-group">

@@ -32,6 +32,7 @@ def case_form(request, id=None):
         else:
             PatientData = PatientRecordForm()
     return render(request, 'case_form.html', {'form': PatientData,
+                                              'path':request.META['PATH_INFO'],
                                               'form_editable': form_editable,
                                               'user': this_user})
 
@@ -72,6 +73,7 @@ def view_case(request, id):
         statusform = StatusForm(instance=case)
         return render(request, 'case.html', {'case': case,
                                              'user': this_user,
+                                             'path':request.META['PATH_INFO'],
                                              'noteform': noteform,
                                              'statusform': statusform})
     except Case.DoesNotExist:
@@ -94,6 +96,7 @@ class CaseList(ListView):
             this_user.save()
         context = super(CaseList, self).get_context_data(**kwargs)
         context['surgeon'] = self.request.user
+        context['path'] = self.request.META['PATH_INFO']
         if context['surgeon'].is_superuser:
             context['cases'] = Case.objects.all()
         else:
