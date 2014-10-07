@@ -5,10 +5,6 @@
 {% block extrehead %}
     {#todo : move to base.html #}
     <title>OpFistula Case Entry</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <style>
         .errorlist {
             color: red;
@@ -17,7 +13,15 @@
         .errorlist li {
             list-style-type: none;
         }
+    .help-block {
+        float: right;
+    }
     </style>
+    <script >
+        $( document ).ready(function() {
+            $('#submissionform .form-group:nth-child(-n+15)').insertAfter('#target0');
+        });
+    </script>
 {% endblock %}
 {% block body %}
 
@@ -26,15 +30,32 @@
     <h1>
         OpFistula Case Form
     </h1>
+
     <form action="{% url 'patientrecord' %}"
           method="post"
           id="submissionform"
           class="form form-horizontal  text-center" >
+      <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+        <li class="active"><a href="#personal" data-toggle="tab">Personal Details</a></li>
+        <li><a href="#part-2" data-toggle="tab">Medical Details</a></li>
+    </ul>
+    <div id="my-tab-content" class="tab-content">
+        <div class="tab-pane active" id="personal">
+            <h1>Personal Details</h1>
+            <p id="target0">
+            </p>
+        </div>
+        <div class="tab-pane" id="part-2">
+            <h1>Medical Details</h1>
+            <p id="target2"></p>
+
         {% csrf_token %}
         {% bootstrap_form form layout='horizontal' %}
+        </div>
+    </div>
         {% if form_editable %}
             {% buttons %}
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary ">
                     {% bootstrap_icon "star" %} Submit
                 </button>
             {% endbuttons %}

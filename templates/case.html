@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
 {% block body %}
     <div class="container-fluid">
     <h1>
@@ -40,15 +44,19 @@
         </ul>
     {% endif %}
 
-    <form action="{% url 'case' case.pk %}" method="post" id="noteform" class="form-horizontal">
+    <form action="{% url 'case' case.pk %}" method="post" id="noteform" class="form form-horizontal">
         {% csrf_token %}
         {% if user.is_superuser %}
             <h2>Change Status</h2>
-            {{ statusform }}
+            {% bootstrap_form statusform layout='horizontal' %}
         {% endif %}
          <h2>Add note</h2>
-         {{ noteform.as_p }}
-            <input type="submit" value="Submit"/>
+    {% bootstrap_form noteform layout='horizontal' %}
+    {% buttons %}
+        <button type="submit" class="btn btn-primary align-center" >
+            {% bootstrap_icon "star" %} Submit
+        </button>
+    {% endbuttons %}
     </form>
 
     </div>
