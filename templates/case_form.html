@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
 {% block extrehead %}
     {#todo : move to base.html #}
     <title>OpFistula Case Entry</title>
@@ -17,15 +20,24 @@
     </style>
 {% endblock %}
 {% block body %}
+
+
     <div class="container-fluid">
     <h1>
         OpFistula Case Form
     </h1>
-    <form action="{% url 'patientrecord' %}" method="post" id="submissionform" class="form-horizontal">
+    <form action="{% url 'patientrecord' %}"
+          method="post"
+          id="submissionform"
+          class="form form-horizontal  text-center" >
         {% csrf_token %}
-        {{ form.as_p }}
+        {% bootstrap_form form layout='horizontal' %}
         {% if form_editable %}
-            <input type="submit" value="Submit"/>
+            {% buttons %}
+                <button type="submit" class="btn btn-primary">
+                    {% bootstrap_icon "star" %} Submit
+                </button>
+            {% endbuttons %}
         {% endif %}
     </form>
 </div>

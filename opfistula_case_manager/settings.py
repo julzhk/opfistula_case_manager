@@ -23,6 +23,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'south',
+    'bootstrap3',
     'CaseEntry',
     'CaseNotes',
     'Surgeon',
