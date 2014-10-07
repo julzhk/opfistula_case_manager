@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,7 +32,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="/">
-                Operation Fistula
+                <img src="{% static "opfistula.png" %}" alt="Operation Fistula Logo" style="width: 80px; margin-top: -5px;"/>
             </a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
