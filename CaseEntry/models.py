@@ -76,7 +76,7 @@ CASE_STATUS_CHOICES = (
     ('PAYMENT REVIEW', 'Payment under review'),
     ('PAYMENT SENT', 'Payment Sent'),
     ('PAYMENT RECEIVED', 'Payment received by Surgeon'),
-    ('PAYMENT NOT RECEIVED', 'Payment not recieved by Surgeon'),
+    ('PAYMENT NOT RECEIVED', 'Payment not received by Surgeon'),
     ('PAYMENT CANCELLED', 'Payment cancelled'),
 )
 
@@ -104,6 +104,7 @@ class TimeStampedModel(models.Model):
     """
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+    published = models.BooleanField(default=True)
 
     class Meta:
         abstract = True
