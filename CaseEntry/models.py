@@ -1,5 +1,5 @@
+from Core.models import TimeStampedModel
 from django.forms import ModelForm
-from django.utils import timezone
 from django.db import models
 from django.conf import settings
 from Surgeon.models import Surgeon
@@ -97,17 +97,6 @@ DRAIN_CHOICES = (
     ('JP', 'JP'),
 )
 
-class TimeStampedModel(models.Model):
-    """
-    Abstract Base Class Model providing self-updating
-    created & modified fields
-    """
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    published = models.BooleanField(default=True)
-
-    class Meta:
-        abstract = True
 
 class PatientRecord(TimeStampedModel):
     class Meta:
@@ -243,6 +232,7 @@ class Case(TimeStampedModel):
 class PatientRecordForm(ModelForm):
     class Meta:
         model = PatientRecord
+        exclude = ['published',]
 
 
 class PatientRecordReadOnlyForm(ModelForm):
