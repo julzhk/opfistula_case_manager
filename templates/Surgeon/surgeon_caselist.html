@@ -1,4 +1,5 @@
 <div class="table-responsive">
+{% if cases %}
     <table class="table table-striped">
         <thead>
         <tr>
@@ -42,8 +43,11 @@
                     {{ case.get_status_display }}
                 </td>
             </tr>
-        {% empty %}
-            None yet
         {% endfor %}
     </table>
+{% else %}
+    <p>
+        No cases to show
+    </p>
+{% endif %}
 </div>
