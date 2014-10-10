@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap3 %}
+{% load staticfiles %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 {% block extrehead %}
@@ -22,6 +23,12 @@
             $('#submissionform .form-group:nth-child(-n+15)').insertAfter('#target0');
         });
     </script>
+    <script src="{% static 'sketch.min.js' %}"></script>
+    <script type="text/javascript">
+  $(function() {
+    $('#simple_sketch').sketch();
+  });
+</script>
 {% endblock %}
 {% block body %}
 
@@ -51,8 +58,21 @@
 
         {% csrf_token %}
         {% bootstrap_form form layout='horizontal' %}
+            <input type="text" id="canvasData" name="canvasData"/>
+            <input type='button' value="update" onclick='jscript:updateData();'>
+            <canvas id="simple_sketch"
+            width="600" height="600"
+            style="background: url(http://farm1.static.flickr.com/91/239595759_3c3626b24a_b.jpg) no-repeat center center;">
+        </canvas>
+        <script type="text/javascript">
+            function updateData() {
+                $('#canvasData')[0].value = $('canvas')[0].toDataURL();
+            }
+        </script>
         </div>
     </div>
+
+
         {% if form_editable %}
             {% buttons %}
                 <button type="submit" class="btn btn-primary ">
@@ -62,4 +82,7 @@
         {% endif %}
     </form>
 </div>
+
+
+
 {% endblock %}
