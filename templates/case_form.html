@@ -29,6 +29,13 @@
     $('#simple_sketch').sketch();
   });
 </script>
+    <script type="text/javascript">
+            function updateData() {
+                console.log('update');
+                console.log($('canvas')[0].toDataURL());
+                $('#canvasData')[0].value = $('canvas')[0].toDataURL();
+            }
+        </script>
 {% endblock %}
 {% block body %}
 
@@ -58,24 +65,19 @@
 
         {% csrf_token %}
         {% bootstrap_form form layout='horizontal' %}
-            <input type="text" id="canvasData" name="canvasData"/>
-            <input type='button' value="update" onclick='jscript:updateData();'>
             <canvas id="simple_sketch"
             width="600" height="600"
             style="background: url(http://farm1.static.flickr.com/91/239595759_3c3626b24a_b.jpg) no-repeat center center;">
-        </canvas>
-        <script type="text/javascript">
-            function updateData() {
-                $('#canvasData')[0].value = $('canvas')[0].toDataURL();
-            }
-        </script>
+            </canvas>
+            <input type="text" id="canvasData" name="canvasData"/>
+            <input type='button' value="update" onclick='updateData();'>
         </div>
     </div>
 
 
         {% if form_editable %}
             {% buttons %}
-                <button type="submit" class="btn btn-primary ">
+                <button type="submit" class="btn btn-primary " onclick='updateData();'>
                     {% bootstrap_icon "star" %} Submit
                 </button>
             {% endbuttons %}

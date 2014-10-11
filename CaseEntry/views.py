@@ -17,12 +17,12 @@ from django.contrib import messages
 def case_form(request, id=None):
     this_user = request.user
     form_editable = True
-    canvasData = request.POST.get('canvasData', '')
     import cStringIO
-    from pillow import Image
-    tempimg = cStringIO.StringIO(canvasData.decode('base64'))
-    im = Image.open(tempimg)
+    from PIL  import Image
     if request.method == 'POST':
+        canvasData = request.POST.get('canvasData', '')
+        tempimg = cStringIO.StringIO(canvasData.decode('base64'))
+        im = Image.open(tempimg)
         PatientData = PatientRecordForm(request.POST)
         if PatientData.is_valid():
             new_case = Case()
