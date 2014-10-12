@@ -20,19 +20,25 @@ def case_form(request, id=None):
     import cStringIO
     from PIL  import Image
     if request.method == 'POST':
-        canvasData = request.POST.get('canvasData', '')
-        img_string = canvasData.replace("data:image/jpeg;base64,", "");
-        img_string = img_string.replace("data:image/png;base64,", "");
-
-        # img_data = canvas.toDataURL('image/jpeg').replace("data:image/jpeg;base64,", "");
-        # tempimg = cStringIO.StringIO(canvasData.decode('base64'))
-        # im = Image.open(tempimg)
-        img_data = img_string.decode("base64")
-        img_file = open("photo.jpg", "wb")
-        img_file.write(img_data)
-        img_file.close()
         PatientData = PatientRecordForm(request.POST)
         if PatientData.is_valid():
+            # this saves the sketc
+            canvasData = request.POST.get('canvasData', '')
+            # img_string = canvasData.replace("data:image/jpeg;base64,", "");
+            img_string = canvasData.replace("data:image/png;base64,", "");
+            img_data = img_string.decode("base64")
+            img_file = open("photo.png", "wb")
+            img_file.write(img_data)
+            img_file.close()
+            # now merge with the background
+            from PIL import Image
+
+            background = Image.open("test1.png")
+            foreground = Image.open("photo.png")
+
+            background.paste(foreground, (0, 0), foreground)
+            background.save('photo2b.png')
+
             new_case = Case()
             new_case.patientrecord = PatientData.save()
             new_case.surgeon = this_user.surgeon
