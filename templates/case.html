@@ -30,6 +30,13 @@
             Status : {{ case.get_status_display }}
         </li>
     </ul>
+    <img src="{% url 'caseimageview' case.pk %}"
+         style="
+            border-color: grey;
+            border-width: 1px;
+            border-style: solid;
+            "
+            ><br>
     <a href="{% url 'viewpatientrecord'  case.id %}">Full Patient Record</a>
     {% if case.note_set.all %}
         <h2>
