@@ -39,7 +39,6 @@ def case_form(request, id=None):
     if request.method == 'POST':
         PatientData = PatientRecordForm(request.POST)
         if PatientData.is_valid():
-
             new_case = Case()
             new_case.patientrecord = PatientData.save()
             new_case.surgeon = this_user.surgeon
@@ -124,3 +123,24 @@ class CaseList(ListView):
         else:
             context['cases'] = context['surgeon'].surgeon.case_set.all()
         return context
+
+def serve_img(request,pk=12):
+    import os.path
+    import mimetypes
+    mimetypes.init()
+    try:
+        id = int(pk)
+        fn = '%s/uploads/sketch%s.png' % (settings.BASE_DIR,id)
+        file_path = fn
+        fsock = open(file_path,"r")
+        file_name = os.path.basename(file_path)
+        file_size = os.path.getsize(file_path)
+        print "file size is: " + str(file_size)
+        mime_type_guess = mimetypes.guess_type(file_name)
+        if mime_type_guess is not None:
+            response = HttpResponse(fsock, mimetype=mime_type_guess[0])
+        # response['Content-Disposition'] = 'attachment; filename=' + file_name
+    except IOError:
+        from django.http.response import HttpResponseNotFound
+        response = HttpResponseNotFound()
+    return response
