@@ -21,8 +21,16 @@ def case_form(request, id=None):
     from PIL  import Image
     if request.method == 'POST':
         canvasData = request.POST.get('canvasData', '')
-        tempimg = cStringIO.StringIO(canvasData.decode('base64'))
-        im = Image.open(tempimg)
+        img_string = canvasData.replace("data:image/jpeg;base64,", "");
+        img_string = img_string.replace("data:image/png;base64,", "");
+
+        # img_data = canvas.toDataURL('image/jpeg').replace("data:image/jpeg;base64,", "");
+        # tempimg = cStringIO.StringIO(canvasData.decode('base64'))
+        # im = Image.open(tempimg)
+        img_data = img_string.decode("base64")
+        img_file = open("photo.jpg", "wb")
+        img_file.write(img_data)
+        img_file.close()
         PatientData = PatientRecordForm(request.POST)
         if PatientData.is_valid():
             new_case = Case()
