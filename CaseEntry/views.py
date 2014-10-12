@@ -33,12 +33,12 @@ def case_form(request, id=None):
             # now merge with the background
             from PIL import Image
 
-            background = Image.open("test1.png")
+            background = Image.open("test2.png")
             foreground = Image.open("photo.png")
-
-            background.paste(foreground, (0, 0), foreground)
-            background.save('photo2b.png')
-
+            Image.alpha_composite(background, foreground).save("test3.png")
+            # this also works..
+            # background.paste(foreground, (0, 0), foreground)
+            # background.save('photo2b.png')
             new_case = Case()
             new_case.patientrecord = PatientData.save()
             new_case.surgeon = this_user.surgeon
