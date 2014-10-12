@@ -13,18 +13,20 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from PIL import Image
 import StringIO
-
+from django.conf import settings
 
 def save_sketch(request,id):
     # this saves the sketch
     canvasData = request.POST.get('canvasData', '')
-    img_string = canvasData.replace("data:image/png;base64,", "");
+    img_string = canvasData.replace("data:image/png;base64,", "")
     img_data = img_string.decode("base64")
     img_file = StringIO.StringIO(img_data)
     # now merge with the background
-    background = Image.open("case_form_background.png")
+    backimgfn = '%s/static/case_form_background.png' % (settings.BASE_DIR)
+    background = Image.open(backimgfn)
     foreground = Image.open(img_file)
-    Image.alpha_composite(background, foreground).save("sketch%s.png" % id)
+    fn = '%s/uploads/sketch%s.png' % (settings.BASE_DIR,id)
+    Image.alpha_composite(background, foreground).save(fn)
     img_file.close()
 
 

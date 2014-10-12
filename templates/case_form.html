@@ -67,7 +67,7 @@
         {% bootstrap_form form layout='horizontal' %}
             <canvas id="simple_sketch"
             width="600" height="600"
-            style="background: url(http://farm1.static.flickr.com/91/239595759_3c3626b24a_b.jpg) no-repeat center center;">
+            style="background: url({% static 'case_form_background.png' %}) no-repeat center center;">
             </canvas>
             <input type="text" id="canvasData" name="canvasData"/>
             <input type='button' value="update" onclick='updateData();'>
