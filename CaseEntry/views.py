@@ -11,6 +11,21 @@ from django.views.generic import ListView
 from Surgeon.models import Surgeon
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
+from PIL import Image
+import StringIO
+
+
+def save_sketch(request,id):
+    # this saves the sketch
+    canvasData = request.POST.get('canvasData', '')
+    img_string = canvasData.replace("data:image/png;base64,", "");
+    img_data = img_string.decode("base64")
+    img_file = StringIO.StringIO(img_data)
+    # now merge with the background
+    background = Image.open("case_form_background.png")
+    foreground = Image.open(img_file)
+    Image.alpha_composite(background, foreground).save("sketch%s.png" % id)
+    img_file.close()
 
 
 @login_required
@@ -22,27 +37,12 @@ def case_form(request, id=None):
     if request.method == 'POST':
         PatientData = PatientRecordForm(request.POST)
         if PatientData.is_valid():
-            # this saves the sketc
-            canvasData = request.POST.get('canvasData', '')
-            # img_string = canvasData.replace("data:image/jpeg;base64,", "");
-            img_string = canvasData.replace("data:image/png;base64,", "");
-            img_data = img_string.decode("base64")
-            img_file = open("photo.png", "wb")
-            img_file.write(img_data)
-            img_file.close()
-            # now merge with the background
-            from PIL import Image
 
-            background = Image.open("test2.png")
-            foreground = Image.open("photo.png")
-            Image.alpha_composite(background, foreground).save("test3.png")
-            # this also works..
-            # background.paste(foreground, (0, 0), foreground)
-            # background.save('photo2b.png')
             new_case = Case()
             new_case.patientrecord = PatientData.save()
             new_case.surgeon = this_user.surgeon
             new_case.save()
+            save_sketch(request,new_case.pk)
             messages.add_message(request, messages.INFO, '%s: new case created' % new_case.patientrecord.patient)
             return HttpResponseRedirect(reverse_lazy('caselist'))
     else:
