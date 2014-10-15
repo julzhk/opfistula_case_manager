@@ -238,6 +238,7 @@ class PatientRecordForm(ModelForm):
 class PatientRecordReadOnlyForm(ModelForm):
     class Meta:
         model = PatientRecord
+        exclude = ['published', ]
 
     def __init__(self, *args, **kwargs):
         super(PatientRecordReadOnlyForm, self).__init__(*args, **kwargs)
