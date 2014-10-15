@@ -17,7 +17,9 @@ from django.conf import settings
 
 def save_sketch(request,id):
     # this saves the sketch
-    canvasData = request.POST.get('canvasData', '')
+    canvasData = request.POST.get('canvasData', None)
+    if not canvasData:
+        return
     img_string = canvasData.replace("data:image/png;base64,", "")
     img_data = img_string.decode("base64")
     img_file = StringIO.StringIO(img_data)
@@ -49,7 +51,7 @@ def case_form(request, id=None):
     else:
         if id:
             PatientData = PatientRecordReadOnlyForm(
-                instance=PatientRecord.objects.get(pk=int(id)),
+                instance=PatientRecord.published_objects.get(pk=int(id)),
             )
             form_editable = False
         else:
@@ -58,8 +60,6 @@ def case_form(request, id=None):
                                               'path':request.META['PATH_INFO'],
                                               'form_editable': form_editable,
                                               'user': this_user})
-
-
 
 
 class StatusForm(ModelForm):
@@ -78,7 +78,7 @@ def view_case(request, id):
     id = int(id)
     this_user = request.user
     try:
-        case = Case.objects.get(id=id)
+        case = Case.published_objects.get(id=id)
         if request.method == 'POST':
             NoteData = NoteForm(request.POST)
             StatusData = StatusForm(request.POST)
@@ -105,6 +105,7 @@ class CaseList(ListView):
     model = Case
     context_object_name = 'cases'
     template_name = 'surgeon_home.html'
+    queryset = Case.published_objects.all()
 
     def get_context_data(self, **kwargs):
         # a superuser created in python might not have 1-1 Surgeon model associated
@@ -119,7 +120,7 @@ class CaseList(ListView):
         context['surgeon'] = self.request.user
         context['path'] = self.request.META['PATH_INFO']
         if context['surgeon'].is_superuser:
-            context['cases'] = Case.objects.all()
+            context['cases'] = Case.published_objects.all()
         else:
             context['cases'] = context['surgeon'].surgeon.case_set.all()
         return context

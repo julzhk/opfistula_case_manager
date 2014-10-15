@@ -119,6 +119,19 @@ class ViewPatientRecord(TestFixture):
         self.assertFalse(response.context['form_editable'])
         self.assertTrue('my_new_test_patient' in response.content, response.content)
 
+    def test_cannot_see_unpublished_patients(self):
+        self.c.login(username='admin', password='pass')
+        response = self.c.get('/caselist/')
+        self.assertEquals(response.status_code, 200)
+        cases = response.context['cases']
+        self.assertTrue(len(cases) == 1)
+        self.case.published = False
+        self.case.save()
+        response = self.c.get('/caselist/')
+        self.assertEquals(response.status_code, 200)
+        cases = response.context['cases']
+        self.assertTrue(len(cases) == 0, [c.__dict__ for c in cases])
+
 
 class AdminViews(TestFixture):
     # we have a record & an admin. Lets add another surgeon & give them a patient
