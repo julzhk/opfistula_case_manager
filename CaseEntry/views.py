@@ -1,30 +1,18 @@
-from django.shortcuts import render
-from django import forms
+import StringIO
+
+from Core.models import paginate
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.forms import ModelForm
 from CaseEntry.models import PatientRecord, PatientRecordForm, Case, PatientRecordReadOnlyForm
 from CaseNotes.models import Note
-from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
 from Surgeon.models import Surgeon
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from PIL import Image
-import StringIO
 from django.conf import settings
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-
-def paginate(qs, page):
-    paginator = Paginator(qs, settings.PAGE_SIZE)
-    try:
-        return paginator.page(page)
-    except PageNotAnInteger:
-        return paginator.page(1)
-    except EmptyPage:
-        return paginator.page(paginator.num_pages)
 
 
 def save_sketch(request,id):
@@ -48,8 +36,6 @@ def save_sketch(request,id):
 def case_form(request, id=None):
     this_user = request.user
     form_editable = True
-    import cStringIO
-    from PIL  import Image
     if request.method == 'POST':
         PatientData = PatientRecordForm(request.POST)
         if PatientData.is_valid():

@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import models
 
 __author__ = 'julz'
@@ -22,3 +24,13 @@ class TimeStampedModel(models.Model):
 
     objects = models.Manager()
     published_objects = PublishedManager()
+
+
+def paginate(qs, page):
+    paginator = Paginator(qs, settings.PAGE_SIZE)
+    try:
+        return paginator.page(page)
+    except PageNotAnInteger:
+        return paginator.page(1)
+    except EmptyPage:
+        return paginator.page(paginator.num_pages)

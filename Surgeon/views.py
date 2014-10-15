@@ -17,6 +17,8 @@ from django.contrib import messages
 from django import forms
 from django.views.generic.edit import CreateView
 from django.forms import ModelForm, Form
+from django.conf import settings
+from Core.models import paginate
 
 
 def home(request):
@@ -31,6 +33,7 @@ def home(request):
 class SurgeonList(ListView):
     model = Surgeon
     context_object_name = 'surgeon_list'
+    paginate_by = settings.PAGE_SIZE
 
     def get_queryset(self):
         qs = self.model.objects.all()
@@ -45,6 +48,9 @@ class SurgeonList(ListView):
     def get_context_data(self, **kwargs):
         context = super(SurgeonList, self).get_context_data(**kwargs)
         context['path'] = self.request.META['PATH_INFO']
+        page = self.request.GET.get('page', 1)
+
+        context['surgeon_list'] = paginate(context['surgeon_list'], page)
         return context
 
 class SurgeonDetailView(DetailView):

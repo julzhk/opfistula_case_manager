@@ -43,6 +43,21 @@
                 {% endfor %}
                 </tbody>
             </table>
-        <a href="{% url 'surgeon_add' %}">Add Surgeon?</a>
+            {% if is_paginated %}
+                <div class="pagination">
+                <span class="page-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+                    <span class="page-current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    {% endif %}
+                </span>
+                </div>
+            {% endif %}
+            <a href="{% url 'surgeon_add' %}">Add Surgeon?</a>
         </div>
 {% endblock %}

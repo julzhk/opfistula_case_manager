@@ -9,6 +9,7 @@ import datetime
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from django.test import Client
+from django.conf import settings
 
 
 def create_a_surgeon_record(name,
@@ -275,5 +276,27 @@ class PaginationTests(TestFixture):
         c.login(username='admin', password='pass')
         response = c.get('/caselist/')
         cases = response.context['cases']
+
         self.assertTrue(len(cases) < 25)
         self.assertFalse(len(cases) == 61)
+
+    def test_surgeon_paged_list(self):
+        for i in range(0, 40):
+            u = User.objects.create_user(
+                str(i),
+                'admin@test.com',
+                'pass')
+            u.save()
+            u.is_staff = True
+            u.is_superuser = True
+            u.save()
+            s = Surgeon.objects.create(
+                institution='abc%s' % i,
+                user=u)
+
+        c = self.c
+        c.login(username='admin', password='pass')
+        response = c.get('/surgeons/')
+        surgeons = response.context['surgeon_list']
+        self.assertTrue(len(surgeons) < 25)
+        self.assertFalse(len(surgeons) == 39)
