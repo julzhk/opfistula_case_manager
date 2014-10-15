@@ -14,6 +14,18 @@ from django.contrib import messages
 from PIL import Image
 import StringIO
 from django.conf import settings
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+
+def paginate(qs, page):
+    paginator = Paginator(qs, settings.PAGE_SIZE)
+    try:
+        return paginator.page(page)
+    except PageNotAnInteger:
+        return paginator.page(1)
+    except EmptyPage:
+        return paginator.page(paginator.num_pages)
+
 
 def save_sketch(request,id):
     # this saves the sketch
@@ -106,6 +118,7 @@ class CaseList(ListView):
     context_object_name = 'cases'
     template_name = 'surgeon_home.html'
     queryset = Case.published_objects.all()
+    paginate_by = settings.PAGE_SIZE
 
     def get_context_data(self, **kwargs):
         # a superuser created in python might not have 1-1 Surgeon model associated
@@ -120,9 +133,11 @@ class CaseList(ListView):
         context['surgeon'] = self.request.user
         context['path'] = self.request.META['PATH_INFO']
         if context['surgeon'].is_superuser:
-            context['cases'] = Case.published_objects.all()
+            cases = Case.published_objects.all()
         else:
-            context['cases'] = context['surgeon'].surgeon.case_set.all()
+            cases = context['surgeon'].surgeon.case_set.all()
+        page = self.request.GET.get('page', 1)
+        context['cases'] = paginate(cases, page)
         return context
 
 def serve_img(request,pk=12):

@@ -248,3 +248,32 @@ class TestLoggedInOnly(TestFixture):
                          ''})
         print response.status_code
         print response.content
+
+
+class PaginationTests(TestFixture):
+    def setUp(self):
+        # create admin & a case
+        super(PaginationTests, self).setUp()
+        for i in range(0, 60):
+            p = PatientRecord.objects.create(
+                patient='test_patient_%s' % i,
+                age=22 + i,
+                ip='ipcode',
+                admission_date='2014-4-14',
+                surgery_date='2014-5-24',
+            )
+            c = Case(patientrecord=p, surgeon=self.surgeon)
+            c.save()
+
+    def test_setup(self):
+        cases = Case.objects.all()
+        print len(cases)
+        self.assertTrue(len(cases) == 61, len(cases))
+
+    def test_pages_cases_list(self):
+        c = self.c
+        c.login(username='admin', password='pass')
+        response = c.get('/caselist/')
+        cases = response.context['cases']
+        self.assertTrue(len(cases) < 25)
+        self.assertFalse(len(cases) == 61)
