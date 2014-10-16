@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% block extrehead %}
+    {#todo : move to base.html #}
+    <title>OpFistula Case Entry</title>
+    <style>
+        .errorlist {
+            color: red;
+        }
+
+        .errorlist li {
+            list-style-type: none;
+        }
+
+        .help-block {
+            float: right;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $('#submissionform .form-group:nth-child(-n+15)').insertAfter('#target0');
+        });
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <h1>
+            Create Surgeon Record
+        </h1>
+
+        <form action="{% url 'surgeon_add' %}" method="post" id="submissionform" class="form-horizontal text-center">
+            {% csrf_token %}
+            {% bootstrap_form form layout='horizontal' %}
+            {% bootstrap_form personalinfoform layout='horizontal' %}
+            {% bootstrap_form userform layout='horizontal' %}
+            {% buttons %}
+                <button type="submit" class="btn btn-primary align-center">
+                    {% bootstrap_icon "star" %} Submit
+                </button>
+            {% endbuttons %}
+        </form>
+    </div>
+{% endblock %}
