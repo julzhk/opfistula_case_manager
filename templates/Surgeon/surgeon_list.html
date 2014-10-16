@@ -2,49 +2,49 @@
 {% block body %}
     <div class="container-fluid">
         <h2>All users</h2>
-    <ul>
+        <ul>
 
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>
-                        Name
-                    </th>
-                    <th>
-                        User Type
-                    </th>
-                    <th>
-                        Institution
-                    </th>
-                    <th>
-                        Number of cases
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for surgeon in surgeon_list %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
                     <tr>
-                        <td>
-                            <a href="{% url 'surgeon_details' surgeon.pk %}">
-                                {{ surgeon }}
-                            </a>
-                        </td>
-                        <td>
-                            {{ surgeon.type }}
-                        </td>
-                        <td>
-                            {{ surgeon.institution }}
-                        </td>
-                        <td>
-                            {{ surgeon.case_set.all|length }}
-                        </td>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            User Type
+                        </th>
+                        <th>
+                            Institution
+                        </th>
+                        <th>
+                            Number of cases
+                        </th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            {% if is_paginated %}
-                <div class="pagination">
+                    </thead>
+                    <tbody>
+                    {% for surgeon in surgeon_list %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'surgeon_details' surgeon.pk %}">
+                                    {{ surgeon }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ surgeon.type }}
+                            </td>
+                            <td>
+                                {{ surgeon.institution }}
+                            </td>
+                            <td>
+                                {{ surgeon.case_set.all|length }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% if is_paginated %}
+                    <div class="pagination">
                 <span class="page-links">
                     {% if page_obj.has_previous %}
                         <a href="?page={{ page_obj.previous_page_number }}">previous</a>
@@ -56,8 +56,8 @@
                         <a href="?page={{ page_obj.next_page_number }}">next</a>
                     {% endif %}
                 </span>
-                </div>
-            {% endif %}
-            <a href="{% url 'surgeon_add' %}">Add Surgeon?</a>
-        </div>
+                    </div>
+                {% endif %}
+                <a href="{% url 'surgeon_add' %}">Add Surgeon?</a>
+            </div>
 {% endblock %}

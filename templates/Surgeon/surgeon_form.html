@@ -13,12 +13,13 @@
         .errorlist li {
             list-style-type: none;
         }
-    .help-block {
-        float: right;
-    }
+
+        .help-block {
+            float: right;
+        }
     </style>
-    <script >
-        $( document ).ready(function() {
+    <script>
+        $(document).ready(function () {
             $('#submissionform .form-group:nth-child(-n+15)').insertAfter('#target0');
         });
     </script>
@@ -35,7 +36,7 @@
             {% bootstrap_form personalinfoform layout='horizontal' %}
             {% bootstrap_form userform layout='horizontal' %}
             {% buttons %}
-                <button type="submit" class="btn btn-primary align-center" >
+                <button type="submit" class="btn btn-primary align-center">
                     {% bootstrap_icon "star" %} Submit
                 </button>
             {% endbuttons %}
