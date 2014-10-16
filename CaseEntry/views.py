@@ -122,6 +122,9 @@ class CaseList(ListView):
             cases = Case.published_objects.all()
         else:
             cases = context['surgeon'].surgeon.case_set.all()
+        search = self.request.GET.get('q')
+        if search:
+            cases = cases.filter(patientrecord__patient__icontains=search)
         page = self.request.GET.get('page', 1)
         context['cases'] = paginate(cases, page)
         return context

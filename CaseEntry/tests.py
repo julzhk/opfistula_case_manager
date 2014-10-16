@@ -300,3 +300,28 @@ class PaginationTests(TestFixture):
         surgeons = response.context['surgeon_list']
         self.assertTrue(len(surgeons) < 25)
         self.assertFalse(len(surgeons) == 39)
+
+
+class SearchCasesTests(TestFixture):
+    def setUp(self):
+        # create admin & a case
+        super(SearchCasesTests, self).setUp()
+        for i in range(0, 60):
+            p = PatientRecord.objects.create(
+                patient='test_patient_%s' % i,
+                age=22 + i,
+                ip='ipcode',
+                admission_date='2014-4-14',
+                surgery_date='2014-5-24',
+            )
+            c = Case(patientrecord=p, surgeon=self.surgeon)
+            c.save()
+
+    def test_adminsearch(self):
+        c = self.c
+        c.login(username='admin', password='pass')
+        response = c.get('/caselist/?q=1')
+        cases = response.context['cases']
+        for i in cases:
+            self.assertTrue('1' in i.patientrecord.patient, i.patientrecord.patient)
+
