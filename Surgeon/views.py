@@ -33,6 +33,7 @@ def home(request):
 class SurgeonList(ListView):
     model = Surgeon
     context_object_name = 'surgeon_list'
+    template_name = 'surgeon/surgeon_list.html'
     paginate_by = settings.PAGE_SIZE
 
     def get_queryset(self):
@@ -56,6 +57,7 @@ class SurgeonList(ListView):
 class SurgeonDetailView(DetailView):
     model = Surgeon
     queryset = Surgeon.objects.all()
+    template_name = 'surgeon/surgeon_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super(SurgeonDetailView, self).get_context_data(**kwargs)
@@ -76,6 +78,7 @@ class SurgeonPersonalInfoForm(Form):
 
 class SurgeonCreate(CreateView):
     model = Surgeon
+    template_name = 'surgeon/surgeon_form.html'
     fields = ('institution',)
 
     def post(self, request, *args, **kwargs):
@@ -109,6 +112,8 @@ class SurgeonCreate(CreateView):
 class SurgeonUpdate(UpdateView):
     model = Surgeon
     fields = ['institution']
+    template_name = 'surgeon/surgeon_form.html'
+
     def get_context_data(self, **kwargs):
         context = super(SurgeonUpdate, self).get_context_data(**kwargs)
         context['path'] = self.request.META['PATH_INFO']
@@ -117,6 +122,7 @@ class SurgeonUpdate(UpdateView):
 
 class SurgeonDelete(DeleteView):
     model = Surgeon
+    template_name = 'surgeon/surgeon_form.html'
     success_url = reverse_lazy('surgeon-list')
 
     def get_context_data(self, **kwargs):
