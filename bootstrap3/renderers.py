@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.contrib.auth.forms import ReadOnlyPasswordHashWidget
 
+from django.contrib.auth.forms import ReadOnlyPasswordHashWidget
 from django.forms import (TextInput, DateInput, FileInput, CheckboxInput,
                           ClearableFileInput, Select, RadioSelect, CheckboxSelectMultiple)
 from django.forms.extras import SelectDateWidget
@@ -285,7 +285,8 @@ class FieldRenderer(BaseRenderer):
         TODO: This needs improvement
 
         Currently Django returns
-        Currently: <a href="dummy.txt">dummy.txt</a> <input id="file4-clear_id" name="file4-clear" type="checkbox" /> <label for="file4-clear_id">Clear</label><br />Change: <input id="id_file4" name="file4" type="file" /><span class=help-block></span></div>
+        Currently: <a href="dummy.txt">dummy.txt</a> <input id="file4-clear_id" name="file4-clear" type="checkbox" />
+        <label for="file4-clear_id">Clear</label><br />Change: <input id="id_file4" name="file4" type="file" /><span class=help-block></span></div>
 
         """
         # TODO This needs improvement
@@ -312,8 +313,7 @@ class FieldRenderer(BaseRenderer):
 
     def make_input_group(self, html):
         if ((self.addon_before or self.addon_after) and
-                isinstance(self.widget, (TextInput, DateInput, Select))
-        ):
+                isinstance(self.widget, (TextInput, DateInput, Select))):
             before = '<span class="input-group-addon">{addon}</span>'.format(
                 addon=self.addon_before) if self.addon_before else ''
             after = '<span class="input-group-addon">{addon}</span>'.format(

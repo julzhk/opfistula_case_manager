@@ -1,8 +1,7 @@
-from Core.models import TimeStampedModel
 from django.db import models
-from django.utils import timezone
 from django.conf import settings
-from django.core.urlresolvers import reverse
+
+from Core.models import TimeStampedModel
 
 
 class Surgeon(TimeStampedModel):
@@ -19,7 +18,6 @@ class Surgeon(TimeStampedModel):
     institution = models.CharField(verbose_name='Institution',
                                    blank=True,
                                    max_length=settings.DEFAULT_LONG_CHARFIELD_LENGTH)
-
 
     def type(self):
         if self.user.is_superuser:

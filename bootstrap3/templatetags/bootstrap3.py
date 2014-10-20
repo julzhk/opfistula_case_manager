@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 import re
-
 from math import floor
 
 from django import template

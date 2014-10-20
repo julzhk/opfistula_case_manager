@@ -1,8 +1,10 @@
-from Core.models import TimeStampedModel
 from django.forms import ModelForm
 from django.db import models
 from django.conf import settings
+
+from Core.models import TimeStampedModel
 from Surgeon.models import Surgeon
+
 
 DEFAULT_LONG_CHARFIELD_LENGTH = settings.DEFAULT_LONG_CHARFIELD_LENGTH
 DEFAULT_SHORT_CHARFIELD_LENGTH = settings.DEFAULT_SHORT_CHARFIELD_LENGTH
@@ -61,9 +63,8 @@ URINE_LEAK_AMOUNT_CHOICES = (
     ('LARGE', 'A large amount'),
 )
 
-URINE_LEAK_ANNOYANCE_CHOICES = [
-                                   (0, ' 0 : Not at all'),
-                               ] + [(r, str(r)) for r in range(1, 10)] + [
+URINE_LEAK_ANNOYANCE_CHOICES = [(0, ' 0 : Not at all'), ]\
+                               + [(r, str(r)) for r in range(1, 10)] + [
                                    (10, ' 10 : A great deal')]
 
 CASE_STATUS_CHOICES = (
@@ -215,7 +216,7 @@ class PatientRecord(TimeStampedModel):
         choices=URINE_LEAK_ANNOYANCE_CHOICES)
 
     def __unicode__(self):
-        return "%s" % (self.patient)
+        return "%s" % self.patient
 
 
 class Case(TimeStampedModel):
@@ -226,13 +227,13 @@ class Case(TimeStampedModel):
     surgeon = models.ForeignKey(Surgeon, blank=True, null=True)
 
     def __unicode__(self):
-        return "%s" % (self.patientrecord.patient)
+        return "%s" % self.patientrecord.patient
 
 
 class PatientRecordForm(ModelForm):
     class Meta:
         model = PatientRecord
-        exclude = ['published',]
+        exclude = ['published', ]
 
 
 class PatientRecordReadOnlyForm(ModelForm):

@@ -1,7 +1,7 @@
-from Core.models import TimeStampedModel
 from django.db import models
-from django.utils import timezone
 from django.conf import settings
+
+from Core.models import TimeStampedModel
 from CaseEntry.models import Case
 
 

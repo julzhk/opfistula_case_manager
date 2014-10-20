@@ -1,7 +1,7 @@
-from django.contrib import admin
-from CaseEntry.models import PatientRecord, Case, CASE_STATUS_CHOICES
 from django import forms
 from django.contrib import admin
+
+from CaseEntry.models import PatientRecord, Case, CASE_STATUS_CHOICES
 from CaseNotes.models import Note
 
 
@@ -15,8 +15,8 @@ class CaseAdminForm(forms.ModelForm):
         status_incremental_codes = {cc[0]: i for (i, cc) in enumerate(CASE_STATUS_CHOICES)}
 
         if self._changed_data and \
-                        status_incremental_codes[self.initial['status']] > \
-                        status_incremental_codes[self.cleaned_data['status']]:
+            status_incremental_codes[self.initial['status']] > \
+                status_incremental_codes[self.cleaned_data['status']]:
             raise forms.ValidationError('Cannot move status backwards')
         return self.cleaned_data["status"]
 
@@ -27,19 +27,19 @@ class CaseAdmin(admin.ModelAdmin):
 
     def patientrecord(obj):
         return "<a href='/admin/CaseEntry/patientrecord/%s'>Form for %s</a>" % (
-        obj.patientrecord.id, obj.patientrecord.patient)
+            obj.patientrecord.id, obj.patientrecord.patient)
 
     case_name.short_description = 'Patient'
     patientrecord.allow_tags = True
     list_filter = ('status',)
-    list_display = ( case_name, patientrecord, 'created', 'status',)
+    list_display = (case_name, patientrecord, 'created', 'status',)
     radio_fields = {"status": admin.VERTICAL}
     inlines = [CaseNotesInline, ]
     form = CaseAdminForm
 
 
 class PatientRecordAdmin(admin.ModelAdmin):
-    list_display = ( 'patient', 'age',)
+    list_display = ('patient', 'age',)
 
 
 admin.site.register(PatientRecord, PatientRecordAdmin)

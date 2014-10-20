@@ -1,21 +1,22 @@
 import StringIO
 
-from Core.models import paginate
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.forms import ModelForm
-from CaseEntry.models import PatientRecord, PatientRecordForm, Case, PatientRecordReadOnlyForm
-from CaseNotes.models import Note
 from django.views.generic import ListView
-from Surgeon.models import Surgeon
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from PIL import Image
 from django.conf import settings
 
+from Core.models import paginate
+from CaseEntry.models import PatientRecord, PatientRecordForm, Case, PatientRecordReadOnlyForm
+from CaseNotes.models import Note
+from Surgeon.models import Surgeon
 
-def save_sketch(request,id):
+
+def save_sketch(request, id):
     # this saves the sketch
     canvasData = request.POST.get('canvasData', None)
     if not canvasData:
@@ -24,10 +25,10 @@ def save_sketch(request,id):
     img_data = img_string.decode("base64")
     img_file = StringIO.StringIO(img_data)
     # now merge with the background
-    backimgfn = '%s/static/case_form_background.png' % (settings.BASE_DIR)
+    backimgfn = '%s/static/case_form_background.png' % settings.BASE_DIR
     background = Image.open(backimgfn)
     foreground = Image.open(img_file)
-    fn = '%s/uploads/sketch%s.png' % (settings.BASE_DIR,id)
+    fn = '%s/uploads/sketch%s.png' % (settings.BASE_DIR, id)
     Image.alpha_composite(background, foreground).save(fn)
     img_file.close()
 
@@ -43,7 +44,7 @@ def case_form(request, id=None):
             new_case.patientrecord = PatientData.save()
             new_case.surgeon = this_user.surgeon
             new_case.save()
-            save_sketch(request,new_case.pk)
+            save_sketch(request, new_case.pk)
             messages.add_message(request, messages.INFO, '%s: new case created' % new_case.patientrecord.patient)
             return HttpResponseRedirect(reverse_lazy('caselist'))
     else:
@@ -55,7 +56,7 @@ def case_form(request, id=None):
         else:
             PatientData = PatientRecordForm()
     return render(request, 'case_form.html', {'form': PatientData,
-                                              'path':request.META['PATH_INFO'],
+                                              'path': request.META['PATH_INFO'],
                                               'form_editable': form_editable,
                                               'user': this_user})
 
@@ -92,7 +93,7 @@ def view_case(request, id):
         statusform = StatusForm(instance=case)
         return render(request, 'case.html', {'case': case,
                                              'user': this_user,
-                                             'path':request.META['PATH_INFO'],
+                                             'path': request.META['PATH_INFO'],
                                              'noteform': noteform,
                                              'statusform': statusform})
     except Case.DoesNotExist:
@@ -129,15 +130,16 @@ class CaseList(ListView):
         context['cases'] = paginate(cases, page)
         return context
 
-def serve_img(request,pk=12):
+
+def serve_img(request, pk=12):
     import os.path
     import mimetypes
     mimetypes.init()
     try:
         id = int(pk)
-        fn = '%s/uploads/sketch%s.png' % (settings.BASE_DIR,id)
+        fn = '%s/uploads/sketch%s.png' % (settings.BASE_DIR, id)
         file_path = fn
-        fsock = open(file_path,"r")
+        fsock = open(file_path, "r")
         file_name = os.path.basename(file_path)
         file_size = os.path.getsize(file_path)
         print "file size is: " + str(file_size)
