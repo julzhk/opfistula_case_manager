@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.models import AbstractBaseUser
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import models
 
@@ -34,3 +35,10 @@ def paginate(qs, page):
         return paginator.page(1)
     except EmptyPage:
         return paginator.page(paginator.num_pages)
+
+
+class CustomUser(AbstractBaseUser):
+    """
+
+    """
+    pass

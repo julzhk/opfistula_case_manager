@@ -2,7 +2,6 @@ from Core.models import TimeStampedModel
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 
@@ -16,7 +15,7 @@ class Surgeon(TimeStampedModel):
         except AttributeError:
             return 'none'
 
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL)
     institution = models.CharField(verbose_name='Institution',
                                    blank=True,
                                    max_length=settings.DEFAULT_LONG_CHARFIELD_LENGTH)
