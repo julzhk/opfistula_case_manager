@@ -1,11 +1,11 @@
 from django.conf.urls import patterns, include, url
-from CaseEntry.views import case_form
 from django.contrib import admin
-from Surgeon.views import SurgeonList, SurgeonDetailView, SurgeonCreate, SurgeonUpdate, SurgeonDelete
-from CaseEntry.views import CaseList
 from django.views.generic.edit import CreateView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+
+from Surgeon.views import SurgeonList, SurgeonDetailView, SurgeonCreate, SurgeonUpdate, SurgeonDelete
+from CaseEntry.views import CaseList
 
 
 admin.autodiscover()
@@ -34,5 +34,4 @@ urlpatterns = patterns('',
                            name='profile'),
                        url(r'^$', 'Surgeon.views.home', name='home'),
                        url(r'^admin/', include(admin.site.urls)),
-
-)
+                       )

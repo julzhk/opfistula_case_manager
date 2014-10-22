@@ -4,10 +4,9 @@ from __future__ import unicode_literals
 from django import forms
 from django.template import Template, Context
 from django.utils.unittest import TestCase
+
 from bootstrap3.text import text_value, text_concat
-
 from .exceptions import BootstrapError
-
 from .html import add_css_class
 
 
@@ -256,7 +255,6 @@ class FieldTest(TestCase):
         res = render_form_field('subject', form=form)
         self.assertNotIn('required', res)
 
-
     def test_input_group(self):
         res = render_template('{% bootstrap_field form.subject addon_before="$" addon_after=".00" %}')
         self.assertIn('class="input-group"', res)
@@ -267,6 +265,7 @@ class FieldTest(TestCase):
         def _test_size(param, klass):
             res = render_template('{% bootstrap_field form.subject size="' + param + '" %}')
             self.assertIn(klass, res)
+
         def _test_size_medium(param):
             res = render_template('{% bootstrap_field form.subject size="' + param + '" %}')
             self.assertNotIn('input-lg', res)

@@ -1,15 +1,13 @@
-from django.test import TestCase
-from CaseEntry.models import Case, PatientRecord
-from Surgeon.models import Surgeon
 from django.core.urlresolvers import resolve
+
 from django.test import TestCase
-from CaseEntry.views import case_form
 from django.contrib.auth.models import User
-import datetime
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from django.test import Client
-from django.conf import settings
+
+from CaseEntry.models import Case, PatientRecord
+
+from Surgeon.models import Surgeon
+from CaseEntry.views import case_form
 
 
 def create_a_surgeon_record(name,

@@ -1,16 +1,9 @@
 from django.shortcuts import render
-from django import forms
-from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
-from CaseEntry.models import PatientRecord, PatientRecordForm, Case
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from Surgeon.models import Surgeon
+from django.http import HttpResponseRedirect
 from django.views.generic import ListView
 from django.http import Http404
 from django.views.generic import DetailView
-from django.utils import timezone
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
@@ -18,16 +11,14 @@ from django import forms
 from django.views.generic.edit import CreateView
 from django.forms import ModelForm, Form
 from django.conf import settings
+
+from Surgeon.models import Surgeon
 from Core.models import paginate
 
 
 def home(request):
     return render(request,
-                  'home.html',
-        {
-            'path':request.META['PATH_INFO']
-        }
-    )
+                  'home.html', {'path': request.META['PATH_INFO']})
 
 
 class SurgeonList(ListView):
@@ -54,6 +45,7 @@ class SurgeonList(ListView):
         context['surgeon_list'] = paginate(context['surgeon_list'], page)
         return context
 
+
 class SurgeonDetailView(DetailView):
     model = Surgeon
     queryset = Surgeon.objects.all()
@@ -63,6 +55,7 @@ class SurgeonDetailView(DetailView):
         context = super(SurgeonDetailView, self).get_context_data(**kwargs)
         context['path'] = self.request.META['PATH_INFO']
         return context
+
 
 class SurgeonForm(ModelForm):
     class Meta:
@@ -99,14 +92,12 @@ class SurgeonCreate(CreateView):
         messages.add_message(request, messages.INFO, 'Some error in data')
         return HttpResponseRedirect(reverse_lazy('surgeon_add'))
 
-
     def get_context_data(self, **kwargs):
         context = super(SurgeonCreate, self).get_context_data(**kwargs)
         context['path'] = self.request.META['PATH_INFO']
         context['userform'] = UserCreationForm(initial={'username': 'name'})
         context['personalinfoform'] = SurgeonPersonalInfoForm()
         return context
-
 
 
 class SurgeonUpdate(UpdateView):

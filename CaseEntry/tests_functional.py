@@ -1,6 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import unittest
+
 
 # class NewCaseTest(unittest.TestCase):
 class NewCaseTest(object):
