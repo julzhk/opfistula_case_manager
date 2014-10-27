@@ -1,5 +1,4 @@
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -93,3 +92,6 @@ DEFAULT_LONG_CHARFIELD_LENGTH = 90
 DEFAULT_SHORT_CHARFIELD_LENGTH = 30
 
 PAGE_SIZE = 15
+
+# Custom user model setup
+AUTH_USER_MODEL = 'Core.CustomUser'
