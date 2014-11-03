@@ -1,3 +1,5 @@
+from django.conf import global_settings
+import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -26,6 +28,8 @@ INSTALLED_APPS = (
     'CaseEntry',
     'CaseNotes',
     'Surgeon',
+    'Core',
+    'djangobower'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -64,7 +68,6 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
 
-import os
 
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = 'staticfiles'
@@ -93,5 +96,18 @@ DEFAULT_SHORT_CHARFIELD_LENGTH = 30
 
 PAGE_SIZE = 15
 
+
 # Custom user model setup
-AUTH_USER_MODEL = 'Core.CustomUser'
+AUTH_USER_MODEL = 'Surgeon.Surgeon'
+
+
+# Bower setup
+STATICFILES_FINDERS = global_settings.STATICFILES_FINDERS + (
+    'djangobower.finders.BowerFinder',
+)
+
+BOWER_COMPONENTS_ROOT = os.path.join(PROJECT_PATH, 'bower_components')
+
+BOWER_INSTALLED_APPS = (
+    'bootstrap',
+)
