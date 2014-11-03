@@ -40,6 +40,10 @@
                                 {{ surgeon.case_set.all|length }}
                             </td>
                         </tr>
+                    {% empty %}
+                        <tr>
+                        <td colspan="4">No surgeons yet.</td>
+                        </tr>
                     {% endfor %}
                     </tbody>
                 </table>

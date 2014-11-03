@@ -8,7 +8,7 @@
             Please login to start:
             <a href="{% url 'login' %}?next={% url 'home' %}">Login</a>
         {% else %}
-            Welcome {{ user }}!
+            Welcome {{ request.user }}!
             <ul>
                 <li>
                     <a href="{% url 'caselist' %}">Cases</a>
