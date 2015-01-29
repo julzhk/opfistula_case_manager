@@ -58,3 +58,4 @@ docs/_build/
 /venv/
 
 db.sqlite3
+staticfiles

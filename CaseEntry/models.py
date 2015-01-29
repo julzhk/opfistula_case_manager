@@ -1,6 +1,7 @@
 from django.forms import ModelForm
 from django.db import models
 from django.conf import settings
+from django.forms.widgets import TextInput
 
 from Core.models import TimeStampedModel
 from Surgeon.models import Surgeon
@@ -124,11 +125,9 @@ class PatientRecord(TimeStampedModel):
 
     height = models.IntegerField(verbose_name='Height in cm', blank=True, null=True)
     weight = models.IntegerField(verbose_name='Weight in kg', blank=True, null=True)
-    menache_age = models.IntegerField(verbose_name='Age at Menache',
-                                      blank=True, null=True)
-    main_telephone = models.CharField(verbose_name='Main Telephone number',
-                                      blank=True,
-                                      max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
+    menache_age = models.IntegerField(verbose_name='Age at Menache', blank=True, null=True)
+    main_telephone = models.CharField(
+        verbose_name='Main Telephone number', blank=True, max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
     other_telephone = models.TextField(verbose_name='Other Telephone numbers',
                                        blank=True, null=True)
     address = models.TextField(verbose_name='Patient Address',
@@ -234,6 +233,12 @@ class PatientRecordForm(ModelForm):
     class Meta:
         model = PatientRecord
         exclude = ['published', ]
+
+    def __init__(self, *args, **kwargs):
+        super(PatientRecordForm, self).__init__(*args, **kwargs)
+        self.fields['admission_date'].widget = TextInput(attrs={'class': 'datepicker'})
+        self.fields['surgery_date'].widget = TextInput(attrs={'class': 'datepicker'})
+        self.fields['discharge_date'].widget = TextInput(attrs={'class': 'datepicker'})
 
 
 class PatientRecordReadOnlyForm(ModelForm):

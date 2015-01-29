@@ -6,8 +6,6 @@
     <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}">
-    <script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
-    <script src="{% static 'bootstrap/dist/css/bootstrap-theme.css' %}"></script>
     <style type="text/css">
         .info {
             background-color: #ffff00;
@@ -90,5 +88,9 @@
 {% endif %}
 {% block body %}
 {% endblock %}
+{% block js_body %}
+    <script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>
+{% endblock js_body %}
 </body>
 </html>

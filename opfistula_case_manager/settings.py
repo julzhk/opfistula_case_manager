@@ -110,4 +110,5 @@ BOWER_COMPONENTS_ROOT = os.path.join(PROJECT_PATH, 'bower_components')
 
 BOWER_INSTALLED_APPS = (
     'bootstrap',
+    'bootstrap-datepicker',
 )

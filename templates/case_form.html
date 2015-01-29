@@ -18,6 +18,12 @@
         float: right;
     }
     </style>
+<link rel="stylesheet" href="{% static 'bootstrap-datepicker/css/datepicker.css' %}">
+{% endblock %}
+
+{% block js_body %}
+{{ block.super }}
+<script src="{% static 'bootstrap-datepicker/js/bootstrap-datepicker.js' %}"></script>
     <script >
         $( document ).ready(function() {
             $('#submissionform .form-group:nth-child(-n+15)').insertAfter('#target0');
@@ -36,7 +42,11 @@
                 $('#canvasData')[0].value = $('canvas')[0].toDataURL();
             }
         </script>
-{% endblock %}
+<script>
+    $('.datepicker').datepicker();
+</script>
+{% endblock js_body %}
+
 {% block body %}
 
 
