@@ -12,7 +12,7 @@ class UserManager(BaseUserManager):
         """
         now = timezone.now()
         email = self.normalize_email(email)
-        admin = True if is_staff or is_superuser else None
+        admin = is_staff or is_superuser
         user = self.model(email=email, is_staff=is_staff, is_active=True,
                           is_superuser=is_superuser, is_admin=admin, last_login=now,
                           date_joined=now, **extra_fields)
@@ -61,7 +61,10 @@ class Surgeon(AbstractBaseUser):
         return "{} {}".format(self.first_name, self.last_name)
 
     def get_short_name(self):
-        return "{}. {}".format(self.first_name[0], self.last_name)
+        try:
+            return "%(firstinitial)s. %(lastname)s" % {'firstinitial':self.first_name[0], 'lastname':self.last_name}
+        except IndexError:
+            return "Dr. %s" % (self.last_name or '-')
 
     def has_perm(self, perm, obj=None):
         return self.is_admin

@@ -42,7 +42,7 @@ def case_form(request, id=None):
         if PatientData.is_valid():
             new_case = Case()
             new_case.patientrecord = PatientData.save()
-            new_case.surgeon = this_user.surgeon
+            new_case.surgeon = this_user
             new_case.save()
             save_sketch(request, new_case.pk)
             messages.add_message(request, messages.INFO, '%s: new case created' % new_case.patientrecord.patient)
@@ -108,21 +108,13 @@ class CaseList(ListView):
     paginate_by = settings.PAGE_SIZE
 
     def get_context_data(self, **kwargs):
-        # a superuser created in python might not have 1-1 Surgeon model associated
-        this_user = self.request.user
-        try:
-            thissurgeon = this_user.surgeon
-        except Surgeon.DoesNotExist:
-            this_user.surgeon = Surgeon()
-            this_user.surgeon.save()
-            this_user.save()
         context = super(CaseList, self).get_context_data(**kwargs)
         context['surgeon'] = self.request.user
         context['path'] = self.request.META['PATH_INFO']
         if context['surgeon'].is_superuser:
             cases = Case.published_objects.all()
         else:
-            cases = context['surgeon'].surgeon.case_set.all()
+            cases = context['surgeon'].case_set.filter(published=True)
         search = self.request.GET.get('q')
         if search:
             cases = cases.filter(patientrecord__patient__icontains=search)
