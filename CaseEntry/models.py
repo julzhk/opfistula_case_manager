@@ -1,10 +1,11 @@
+from Core.models import TimeStampedModel
 from django.forms import ModelForm
 from django.db import models
 from django.conf import settings
 
 from Core.models import TimeStampedModel
 from Surgeon.models import Surgeon
-
+from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 
 DEFAULT_LONG_CHARFIELD_LENGTH = settings.DEFAULT_LONG_CHARFIELD_LENGTH
 DEFAULT_SHORT_CHARFIELD_LENGTH = settings.DEFAULT_SHORT_CHARFIELD_LENGTH
@@ -63,8 +64,9 @@ URINE_LEAK_AMOUNT_CHOICES = (
     ('LARGE', 'A large amount'),
 )
 
-URINE_LEAK_ANNOYANCE_CHOICES = [(0, ' 0 : Not at all'), ]\
-                               + [(r, str(r)) for r in range(1, 10)] + [
+URINE_LEAK_ANNOYANCE_CHOICES = [
+                                   (0, ' 0 : Not at all'),
+                               ] + [(r, str(r)) for r in range(1, 10)] + [
                                    (10, ' 10 : A great deal')]
 
 CASE_STATUS_CHOICES = (
@@ -219,9 +221,13 @@ class PatientRecord(TimeStampedModel):
         return "%s" % self.patient
 
     def clean(self):
-        from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
-
-        raise ValidationError({'baby_birth_location': 'Draft entries may not have a publication date.'})
+        if self.baby_birth_location =='HOME' and 'CAESAREAN' in self.delivery_type:
+            raise ValidationError(
+              'Cannot have %(type)s at %(location)s',
+                code='invalid',
+                params={'location': self.get_baby_birth_location_display(),'type':self.get_delivery_type_display()},
+            )
+            # raise ValidationError({'baby_birth_location': '.'})
 
 
 class Case(TimeStampedModel):
@@ -232,13 +238,13 @@ class Case(TimeStampedModel):
     surgeon = models.ForeignKey(Surgeon, blank=True, null=True)
 
     def __unicode__(self):
-        return "%s" % self.patientrecord.patient
+        return "%s" % (self.patientrecord.patient)
 
 
 class PatientRecordForm(ModelForm):
     class Meta:
         model = PatientRecord
-        exclude = ['published', ]
+        exclude = ['published',]
 
 
 class PatientRecordReadOnlyForm(ModelForm):
