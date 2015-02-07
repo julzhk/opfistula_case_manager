@@ -218,6 +218,11 @@ class PatientRecord(TimeStampedModel):
     def __unicode__(self):
         return "%s" % self.patient
 
+    def clean(self):
+        from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
+
+        raise ValidationError({'baby_birth_location': 'Draft entries may not have a publication date.'})
+
 
 class Case(TimeStampedModel):
     status = models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
