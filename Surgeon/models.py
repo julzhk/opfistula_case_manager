@@ -2,6 +2,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth.models import Group
 
 
 class UserManager(BaseUserManager):
@@ -33,7 +34,6 @@ class Surgeon(AbstractBaseUser):
     """
     Every user is a Surgeon per default, superusers can do more stuff
     """
-    #TODO specify fields
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -64,7 +64,7 @@ class Surgeon(AbstractBaseUser):
         try:
             return "%(firstinitial)s. %(lastname)s" % {'firstinitial':self.first_name[0], 'lastname':self.last_name}
         except IndexError:
-            return "Dr. %s" % (self.last_name or '-')
+            return "%s" % (self.last_name or '-')
 
     def has_perm(self, perm, obj=None):
         return self.is_admin

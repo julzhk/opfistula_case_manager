@@ -33,8 +33,6 @@
         <form action="{% url 'surgeon_add' %}" method="post" id="submissionform" class="form-horizontal text-center">
             {% csrf_token %}
             {% bootstrap_form form layout='horizontal' %}
-            {% bootstrap_form personalinfoform layout='horizontal' %}
-            {% bootstrap_form userform layout='horizontal' %}
             {% buttons %}
                 <button type="submit" class="btn btn-primary align-center">
                     {% bootstrap_icon "star" %} Submit
