@@ -17,6 +17,8 @@ from Core.models import paginate
 
 from django.contrib.auth.models import Group
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+CREATE_SURGEON_FIELDS = ['institution', 'partnership_type', 'email', 'first_name', 'last_name',
+                         'password1', 'password2']
 
 def home(request):
     return render(request,
@@ -64,7 +66,7 @@ class SurgeonCreationForm(ModelForm):
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
     class Meta:
         model = Surgeon
-        fields = ('institution','email','first_name','last_name','password1','password2')
+        fields = CREATE_SURGEON_FIELDS
 
 
     def clean_password2(self):
@@ -88,11 +90,12 @@ class SurgeonCreate(CreateView):
     #
     form_class = SurgeonCreationForm
     template_name = 'surgeon/surgeon_form.html'
-    # exclude = ('last_login','is_active', 'is_admin', 'is_staff', 'is_superuser')
     def post(self, request, *args, **kwargs):
         userform = SurgeonCreationForm(request.POST)
         if userform.is_valid():
             newuser=userform.save()
+            newuser.is_staff= True
+            newuser.save()
             messages.add_message(request, messages.INFO, '%s: created!' % newuser.get_full_name())
             return HttpResponseRedirect(reverse_lazy('surgeons'))
         messages.add_message(request, messages.INFO, 'Some error in data')
