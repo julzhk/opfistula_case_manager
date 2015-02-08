@@ -183,7 +183,8 @@ class PatientRecord(TimeStampedModel):
                                        blank=True, null=True)
     address = models.TextField(verbose_name='Patient Address',
                                blank=True)
-    country = models.TextField(verbose_name='Patient Country',
+    country = models.CharField(verbose_name='Patient Country',
+                               max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
                                blank=True)
     regular_period = models.NullBooleanField(verbose_name="Are Patient's Periods Regular?",
                                              blank=True)
