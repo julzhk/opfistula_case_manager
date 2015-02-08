@@ -97,25 +97,19 @@ class AddCase(TestFixture):
 
 
     def test_cannot_have_caesarean_at_home(self):
-        self.patientrecord2 = PatientRecord.objects.create(
-            patient='my_new_test_caesarean_home_patient2',
-            baby_birth_location='HOME',
-            delivery_type='CAESAREAN',
-            age=22,
-            ip='ipcode2',
-            admission_date='2014-4-14',
-            surgery_date='2014-5-24',
-        )
-        self.case2 = Case(patientrecord=self.patientrecord2, surgeon=self.surgeon)
-        self.case2.save()
-        # this should fail, so we only still have one case extant
-        c = self.c
-        loginsuccess= c.login(email='admin@test.com', password='pass')
-        self.assertTrue(loginsuccess)
-        response = c.get('/caselist/')
-        cases = response.context['cases']
+        self.patientrecord2_data = {
+            'patient':'my_new_test_caesarean_home_patient2',
+            'baby_birth_location':'HOME',
+            'delivery_type':'CAESAREAN',
+            'age':22,
+            'ip':'ipcode2',
+            'admission_date':'2014-4-14',
+            'surgery_date':'2014-5-24',
+        }
+        response = self.c.post('/submitcase/', self.patientrecord2_data)
+        self.assertEqual(response.status_code,302)
+        cases = Case.objects.all()
         self.assertEquals(len(cases), 1)
-        self.assertEquals(response.status_code, 200)
 
 
 class ViewPatientRecord(TestFixture):
