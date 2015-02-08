@@ -5,8 +5,9 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 from Surgeon.models import Surgeon
-from Surgeon.views import SurgeonCreationForm
+from Surgeon.views import SurgeonCreationForm,CREATE_SURGEON_FIELDS
 
+ADMIN_ONLY_FIELDS = ['is_active','is_admin','is_staff','is_superuser']
 
 class SurgeonChangeForm(forms.ModelForm):
     """A form for updating users. Includes all the fields on
@@ -38,14 +39,15 @@ class SurgeonAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('first_name','last_name','institution',)}),
-        ('Permissions', {'fields': ('is_admin',)}),
+        ('Permissions', {'fields': ADMIN_ONLY_FIELDS}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'institution', 'password1', 'password2','is_admin')}
+            'fields':CREATE_SURGEON_FIELDS + ADMIN_ONLY_FIELDS
+        }
         ),
     )
     search_fields = ('email',)

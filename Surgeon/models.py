@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.contrib.auth.models import Group
 
 
-class UserManager(BaseUserManager):
+class SurgeonManager(BaseUserManager):
 
     def _create_user(self, email, password, is_staff, is_superuser, **extra_fields):
         """
@@ -22,11 +22,13 @@ class UserManager(BaseUserManager):
         return user
 
     def create_user(self, email, password, **extra_fields):
-        return self._create_user(email, password, False, False,
+        return self._create_user(email=email, password=password,
+                                 is_staff=False, is_superuser= False,
                                  **extra_fields)
 
     def create_superuser(self, email, password, **extra_fields):
-        return self._create_user(email, password, True, True,
+        return self._create_user(email, password,
+                                 is_staff=True, is_superuser= True,
                                  **extra_fields)
 
 
@@ -41,6 +43,7 @@ class Surgeon(AbstractBaseUser):
                                    blank=True,
                                    max_length=settings.DEFAULT_LONG_CHARFIELD_LENGTH)
 
+    partnership_type = models.CharField(max_length=50,default='',blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -49,7 +52,7 @@ class Surgeon(AbstractBaseUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
-    objects = UserManager()
+    objects = SurgeonManager()
 
     class Meta:
         verbose_name = 'Surgeon'
@@ -62,7 +65,8 @@ class Surgeon(AbstractBaseUser):
 
     def get_short_name(self):
         try:
-            return "%(firstinitial)s. %(lastname)s" % {'firstinitial':self.first_name[0], 'lastname':self.last_name}
+            return "%(firstinitial)s. %(lastname)s" % \
+                   {'firstinitial':self.first_name[0], 'lastname':self.last_name}
         except IndexError:
             return "%s" % (self.last_name or '-')
 
