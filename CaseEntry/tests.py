@@ -1,16 +1,11 @@
 from django.core.urlresolvers import resolve
-
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.test import Client
 from django.test import TestCase, RequestFactory
-
-
 from CaseEntry.models import Case, PatientRecord
-
 from Surgeon.models import Surgeon
 from CaseEntry.views import case_form
-
 
 def create_a_surgeon_record(name,
                             is_staff=True,
@@ -103,7 +98,7 @@ class AddCase(TestFixture):
 
     def test_cannot_have_caesarean_at_home(self):
         self.patientrecord2 = PatientRecord.objects.create(
-            patient='my_new_test_patient2',
+            patient='my_new_test_caesarean_home_patient2',
             baby_birth_location='HOME',
             delivery_type='CAESAREAN',
             age=22,
@@ -115,7 +110,8 @@ class AddCase(TestFixture):
         self.case2.save()
         # this should fail, so we only still have one case extant
         c = self.c
-        c.login(username='admin', password='pass')
+        loginsuccess= c.login(email='admin@test.com', password='pass')
+        self.assertTrue(loginsuccess)
         response = c.get('/caselist/')
         cases = response.context['cases']
         self.assertEquals(len(cases), 1)
