@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.test import Client
 from django.test import TestCase, RequestFactory
-from CaseEntry.models import Case, PatientRecord
+from CaseEntry.models import Case, PatientRecord,Team_Role,TEAM_ROLES_CHOICES
 from Surgeon.models import Surgeon
 from CaseEntry.views import case_form
 
@@ -315,3 +315,18 @@ class SearchCasesTests(TestFixture):
         for i in cases:
             self.assertTrue('1' in i.patientrecord.patient, i.patientrecord.patient)
 
+class AddOtherRolesToCaseTests(TestFixture):
+     # testfixture setUp has an admin and a case created
+
+    def test_add_surgeon2(self):
+        newcase = Case.objects.get(id=1)
+        self.assertEqual(newcase.patientrecord.patient, 'my_new_test_patient')
+        surgeon2 = Surgeon.objects.create_user(email='admin2@test.com', password='pass')
+        teamrole = Team_Role.objects.create(surgeon=surgeon2,case=newcase,role=TEAM_ROLES_CHOICES[0])
+        self.assertEqual(Team_Role.objects.count(),1)
+        c = self.c
+        success = c.login(email='admin@test.com', password='pass')
+        self.assertTrue(success)
+        response = c.get('/case/1/')
+        context= response.context
+        print context['case']

@@ -30,6 +30,15 @@
             Status : {{ case.get_status_display }}
         </li>
     </ul>
+    <h2>Team</h2>
+    <ul>
+        {% for team_member in case.get_team_members %}
+            <li>
+                {{ team_member.surgeon }} as {{ team_member.get_role_display }}
+            </li>
+        {% endfor %}
+        </ul>
+    <hr>
     <img src="{% url 'caseimageview' case.pk %}"
          style="
             border-color: grey;

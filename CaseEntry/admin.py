@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 
-from CaseEntry.models import PatientRecord, Case, CASE_STATUS_CHOICES
+from CaseEntry.models import PatientRecord, Case, CASE_STATUS_CHOICES,Team_Role
 from CaseNotes.models import Note
 
 
@@ -44,3 +44,4 @@ class PatientRecordAdmin(admin.ModelAdmin):
 
 admin.site.register(PatientRecord, PatientRecordAdmin)
 admin.site.register(Case,CaseAdmin)
+admin.site.register(Team_Role)

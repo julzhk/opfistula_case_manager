@@ -149,6 +149,16 @@ LABOR_DURATION_CHOICES = [
 
 ]
 
+TEAM_ROLES_CHOICES = [
+    ('SURGEON2','Surgeon 2'),
+    ('ASSISTANT1','Assistant 1'),
+    ('ASSISTANT2','Assistant 2'),
+    ('THEATER NURSE','Theater Nurse'),
+    ('ANESTHETIST','Anesthetist'),
+    ('WARD NURSE','Responsible Ward Nurse'),
+    ('OTHER','Other Role'),
+]
+
 class PatientRecord(TimeStampedModel):
     class Meta:
         verbose_name = 'Patient Record Form'
@@ -291,9 +301,23 @@ class Case(TimeStampedModel):
                               default=CASE_STATUS_CHOICES[0][0])
     patientrecord = models.ForeignKey(PatientRecord)
     surgeon = models.ForeignKey(Surgeon, blank=True, null=True)
+    team_role = models.ManyToManyField(Surgeon, through='Team_Role',related_name='case_team_surgeon')
 
     def __unicode__(self):
         return "%s" % (self.patientrecord.patient)
+
+    def get_team_members(self):
+        return Team_Role.objects.filter(case=self)
+
+class Team_Role(models.Model):
+    surgeon = models.ForeignKey(Surgeon,related_name='team_role_surgeon')
+    case = models.ForeignKey(Case, related_name='team_role_case')
+    role = models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,blank=True,
+                            choices=TEAM_ROLES_CHOICES)
+    def __unicode__(self):
+        return "%(name)s on case:%(case)s as %(role)s" % {'name':self.surgeon.get_full_name(),
+                                                     'case':self.case.patientrecord.patient,
+                                                     'role':self.get_role_display() }
 
 
 class PatientRecordForm(ModelForm):
