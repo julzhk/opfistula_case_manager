@@ -24,6 +24,7 @@
 {% block js_body %}
 {{ block.super }}
 <script src="{% static 'bootstrap-datepicker/js/bootstrap-datepicker.js' %}"></script>
+<script src="{% static 'moment/min/moment.min.js'  %}"></script>
     <script >
         $( document ).ready(function() {
             $('#submissionform .form-group:nth-child(-n+15)').insertAfter('#target0');
@@ -43,7 +44,35 @@
             }
         </script>
 <script>
-    $('.datepicker').datepicker();
+    var button_clicked = false;
+    window.onbeforeunload = confirmExit;
+    $("form").submit(function(){
+        button_clicked = true
+    });
+
+    function confirmExit() {
+        if (!button_clicked) {
+            return "You didn't fill out the form yet.";
+        }
+    }
+
+    var startDate = moment().format();
+    var $admission_date = $('#id_admission_date');
+    var $surgery_date = $('id_surgery_date');
+    var $discharge_date = $('id_discharge_date');
+
+
+    $admission_date.datepicker({
+        'format': 'yyyy-mm-dd',
+        'endDate': startDate
+    });
+
+    if($surgery_date.val()){
+        startDate = moment().format();
+    }
+
+
+
 </script>
 {% endblock js_body %}
 
@@ -93,7 +122,4 @@
         {% endif %}
     </form>
 </div>
-
-
-
 {% endblock %}
