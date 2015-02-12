@@ -2,9 +2,10 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth.models import Group
 
 
-class UserManager(BaseUserManager):
+class SurgeonManager(BaseUserManager):
 
     def _create_user(self, email, password, is_staff, is_superuser, **extra_fields):
         """
@@ -12,7 +13,7 @@ class UserManager(BaseUserManager):
         """
         now = timezone.now()
         email = self.normalize_email(email)
-        admin = True if is_staff or is_superuser else None
+        admin = is_staff or is_superuser
         user = self.model(email=email, is_staff=is_staff, is_active=True,
                           is_superuser=is_superuser, is_admin=admin, last_login=now,
                           date_joined=now, **extra_fields)
@@ -21,11 +22,13 @@ class UserManager(BaseUserManager):
         return user
 
     def create_user(self, email, password, **extra_fields):
-        return self._create_user(email, password, False, False,
+        return self._create_user(email=email, password=password,
+                                 is_staff=False, is_superuser= False,
                                  **extra_fields)
 
     def create_superuser(self, email, password, **extra_fields):
-        return self._create_user(email, password, True, True,
+        return self._create_user(email, password,
+                                 is_staff=True, is_superuser= True,
                                  **extra_fields)
 
 
@@ -33,7 +36,6 @@ class Surgeon(AbstractBaseUser):
     """
     Every user is a Surgeon per default, superusers can do more stuff
     """
-    #TODO specify fields
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -41,6 +43,7 @@ class Surgeon(AbstractBaseUser):
                                    blank=True,
                                    max_length=settings.DEFAULT_LONG_CHARFIELD_LENGTH)
 
+    partnership_type = models.CharField(max_length=50,default='',blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -49,7 +52,7 @@ class Surgeon(AbstractBaseUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
-    objects = UserManager()
+    objects = SurgeonManager()
 
     class Meta:
         verbose_name = 'Surgeon'
@@ -61,7 +64,11 @@ class Surgeon(AbstractBaseUser):
         return "{} {}".format(self.first_name, self.last_name)
 
     def get_short_name(self):
-        return "{}. {}".format(self.first_name[0], self.last_name)
+        try:
+            return "%(firstinitial)s. %(lastname)s" % \
+                   {'firstinitial':self.first_name[0], 'lastname':self.last_name}
+        except IndexError:
+            return "%s" % (self.last_name or '-')
 
     def has_perm(self, perm, obj=None):
         return self.is_admin

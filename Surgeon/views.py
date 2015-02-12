@@ -15,6 +15,10 @@ from django.conf import settings
 from Surgeon.models import Surgeon
 from Core.models import paginate
 
+from django.contrib.auth.models import Group
+from django.contrib.auth.forms import ReadOnlyPasswordHashField
+CREATE_SURGEON_FIELDS = ['institution', 'partnership_type', 'email', 'first_name', 'last_name',
+                         'password1', 'password2']
 
 def home(request):
     return render(request,
@@ -57,37 +61,42 @@ class SurgeonDetailView(DetailView):
         return context
 
 
-class SurgeonForm(ModelForm):
+class SurgeonCreationForm(ModelForm):
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
     class Meta:
         model = Surgeon
-        fields = ('institution',)
+        fields = CREATE_SURGEON_FIELDS
 
 
-class SurgeonPersonalInfoForm(Form):
-    first_name = forms.CharField(label='Surgeon First name', max_length=100)
-    last_name = forms.CharField(label='Surgeon First name', max_length=100)
-    email = forms.EmailField()
+    def clean_password2(self):
+        # Check that the two password entries match
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("Passwords don't match")
+        return password2
 
+    def save(self, commit=True):
+        # Save the provided password in hashed format
+        user = super(SurgeonCreationForm, self).save(commit=False)
+        user.set_password(self.cleaned_data["password1"])
+        if commit:
+            user.save()
+        return user
 
 class SurgeonCreate(CreateView):
     model = Surgeon
+    #
+    form_class = SurgeonCreationForm
     template_name = 'surgeon/surgeon_form.html'
-    fields = ('institution',)
-
     def post(self, request, *args, **kwargs):
-        userform = UserCreationForm(request.POST)
-        surgeonform = SurgeonForm(request.POST)
-        personal_info = SurgeonPersonalInfoForm(request.POST)
-        if userform.is_valid() and surgeonform.is_valid() and personal_info.is_valid():
-            userform.save()
-            s = surgeonform.instance
-            s.user = userform.instance
-            for i in personal_info.cleaned_data:
-                s.user.__setattr__(i, personal_info.cleaned_data[i])
-            s.user.is_staff = True
-            s.user.save()
-            s.save()
-            messages.add_message(request, messages.INFO, '%s: created!' % s.user.username)
+        userform = SurgeonCreationForm(request.POST)
+        if userform.is_valid():
+            newuser=userform.save()
+            newuser.is_staff= True
+            newuser.save()
+            messages.add_message(request, messages.INFO, '%s: created!' % newuser.get_full_name())
             return HttpResponseRedirect(reverse_lazy('surgeons'))
         messages.add_message(request, messages.INFO, 'Some error in data')
         return HttpResponseRedirect(reverse_lazy('surgeon_add'))
@@ -95,15 +104,13 @@ class SurgeonCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super(SurgeonCreate, self).get_context_data(**kwargs)
         context['path'] = self.request.META['PATH_INFO']
-        context['userform'] = UserCreationForm(initial={'username': 'name'})
-        context['personalinfoform'] = SurgeonPersonalInfoForm()
         return context
 
 
 class SurgeonUpdate(UpdateView):
     model = Surgeon
-    fields = ['institution']
-    template_name = 'surgeon/surgeon_form.html'
+    # fields = ['institution']
+    # template_name = 'surgeon/surgeon_form.html'
 
     def get_context_data(self, **kwargs):
         context = super(SurgeonUpdate, self).get_context_data(**kwargs)
@@ -113,11 +120,3 @@ class SurgeonUpdate(UpdateView):
 
 class SurgeonDelete(DeleteView):
     model = Surgeon
-    template_name = 'surgeon/surgeon_form.html'
-    success_url = reverse_lazy('surgeon-list')
-
-    def get_context_data(self, **kwargs):
-        context = super(SurgeonDelete, self).get_context_data(**kwargs)
-        context['path'] = self.request.META['PATH_INFO']
-
-        return context

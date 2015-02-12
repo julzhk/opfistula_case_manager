@@ -1,11 +1,12 @@
 from datetime import datetime
+
 from django import forms
 from django.db import models
 from django.conf import settings
 
 from Core.models import TimeStampedModel
 from Surgeon.models import Surgeon
-
+from django.core.exceptions import ValidationError
 
 DEFAULT_LONG_CHARFIELD_LENGTH = settings.DEFAULT_LONG_CHARFIELD_LENGTH
 DEFAULT_SHORT_CHARFIELD_LENGTH = settings.DEFAULT_SHORT_CHARFIELD_LENGTH
@@ -14,18 +15,21 @@ MARITAL_STATUS_CHOICES = (
     ('MARRIED', 'Married'),
     ('DIVORCED', 'Widowed'),
     ('REMARRIED', 'Remarried (with Fistula)'),
+    ('UNKNOWN/OTHER', 'Unknown/Other'),
 )
 
 SOCIAL_STATUS_CHOICES = (
     ('WITH_HUSBAND', 'Living with Husband'),
     ('WITH_FAMILY', 'Living with Family'),
     ('ALONE', 'Living Alone'),
+    ('UNKNOWN/OTHER', 'Unknown/Other'),
 )
 
 BIRTH_LOCATION_CHOICES = (
     ('HOME', 'Home'),
     ('HOSPITAL', 'Hospital'),
     ('HEALTH CENTER', 'Health Center'),
+    ('UNKNOWN/OTHER', 'Unknown/Other'),
 )
 
 DELIVERY_CHOICES = (
@@ -34,11 +38,13 @@ DELIVERY_CHOICES = (
     ('CAESAREAN', 'Caesarean'),
     ('CAESAREAN_HYSTERECTOMY', 'Caesarean Hysterectomy'),
     ('DESTRUCTIVE_CRANIOTOMY', 'Destructive Craniotomy'),
+    ('UNKNOWN/OTHER', 'Unknown/Other'),
 )
 DELIVERY_OUTCOME_CHOICES = (
     ('LIVEBIRTH', 'Live birth'),
     ('STILLBIRTH', 'Stillbirth'),
-    ('EARLY_NEONATAL_DEATH', 'Early Neonatal Death')
+    ('EARLY_NEONATAL_DEATH', 'Early Neonatal Death'),
+    ('UNKNOWN/OTHER', 'Unknown/Other'),
 )
 
 CAUSE_OF_FISTALA_CHOICES = (
@@ -46,6 +52,7 @@ CAUSE_OF_FISTALA_CHOICES = (
     ('CAESAREAN-RELATED', 'Caesarean related'),
     ('HYSTERECTOMY', 'Hysterectomy'),
     ('OTHER', 'Other reason'),
+    ('UNKNOWN', 'Unknown'),
 )
 
 URINE_LEAK_FREQUENCY_CHOICES = (
@@ -55,6 +62,7 @@ URINE_LEAK_FREQUENCY_CHOICES = (
     ('DAILY', 'Once a day'),
     ('SEVERAL_TIMES_PER_DAY', 'Several Times per day'),
     ('CONTINUOUSLY', 'All the time'),
+    ('UNKNOWN/OTHER', 'Unknown/Other'),
 )
 
 URINE_LEAK_AMOUNT_CHOICES = (
@@ -62,11 +70,15 @@ URINE_LEAK_AMOUNT_CHOICES = (
     ('SMALL', 'A small amount'),
     ('MODERATE', 'A moderate amount'),
     ('LARGE', 'A large amount'),
+    ('UNKNOWN/OTHER', 'Unknown/Other'),
 )
 
-URINE_LEAK_ANNOYANCE_CHOICES = [(0, ' 0 : Not at all'), ] \
-                               + [(r, str(r)) for r in range(1, 10)] + [
-                                   (10, ' 10 : A great deal')]
+URINE_LEAK_ANNOYANCE_CHOICES = [(0, ' 0 : Not at all')]\
+                               + [(r, str(r)) for r in range(1, 10)] +\
+                               [
+                                   (10, ' 10 : A great deal'),
+                                   ('UNKNOWN/OTHER', 'Unknown/Other'),
+                               ]
 
 CASE_STATUS_CHOICES = (
     ('NEW', 'New Case'),
@@ -86,19 +98,67 @@ ANASTHETIC_TECHNIQUE_CHOICES = (
     ('GENERAL', 'General Anasthetic'),
     ('IV SEDATION', 'IV Sedation'),
     ('SPINAL', 'Spinal'),
-    ('SPINAL + GENERAL', 'Spinal followed by General')
+    ('SPINAL + GENERAL', 'Spinal followed by General'),
+    ('UNKNOWN/OTHER', 'Unknown/Other'),
 )
 
 DYE_TEST_CHOICES = (
     ('POSITIVE', 'Positive'),
     ('NEGATIVE', 'Negative'),
     ('NOT DONE', 'Not Done'),
+    ('UNKNOWN/OTHER', 'Unknown/Other'),
 )
 DRAIN_CHOICES = (
     ('PENROSE', 'Penrose'),
     ('JP', 'JP'),
+    ('UNKNOWN/OTHER', 'Unknown/Other'),
 )
 
+LAST_PERIOD_DATE_ALTERNATIVE_CHOICES = (
+    ("NOT APPLICABLE","Not Applicable"),
+    ("MENOPAUSE",'Menopause'),
+    ("AMENORREHEA","Amenorrhea"),
+    ('NOT MENSTRUATING',"Not menstruating"),
+    ('UNKNOWN/OTHER', 'Unknown/Other'),
+)
+
+# How long was the labor? - this one is usually answered in "hours"
+# up to about 48 or maybe 72 hours.
+# After that, the answers switch to "days".
+# They go up to seven days (longest I've seen, anyway).
+#  We don't have a standard unit measurement for this - neither hours nor days -
+# so I always just write in the entire answer to keep the data valid.
+#  Is there a way you can allocate for hours and days both?  Or standardize it and use days?
+
+
+LABOR_DURATION_CHOICES = [
+    (6,'less than 6 Hours'),
+    (12,'6-12 Hours'),
+    (18,'12-18 Hours'),
+    (24,'18-24 Hours'),
+    (24+12,'1-1.5 Days'),
+    (24+24,'1.5-2 Days'),
+    (24+24+12,'2-2.5 Days'),
+    (24+24+24,'2.5-3 Days'),
+    (24+24+24+12,'3-3.5 Days'),
+    (24+24+24+24,'3.5-4 Days'),
+    (24*5,'4-5 Days'),
+    (24*6,'5-6 Days'),
+    (24*7,'6-7 Days'),
+    (24*8,'7-8 Days or more'),
+    ('UNKNOWN/OTHER', 'Unknown/Other'),
+
+]
+
+TEAM_ROLES_CHOICES = [
+    ('SURGEON2','Surgeon 2'),
+    ('ASSISTANT1','Assistant 1'),
+    ('ASSISTANT2','Assistant 2'),
+    ('THEATER NURSE','Theater Nurse'),
+    ('ANESTHETIST','Anesthetist'),
+    ('WARD NURSE','Responsible Ward Nurse'),
+    ('OTHER','Other Role'),
+]
 
 class PatientRecord(TimeStampedModel):
     class Meta:
@@ -106,103 +166,95 @@ class PatientRecord(TimeStampedModel):
 
     patient = models.CharField(verbose_name='Patient Name',
                                max_length=DEFAULT_LONG_CHARFIELD_LENGTH)
-    age = models.IntegerField(
-        verbose_name='Patient Age', null=True, default=0, blank=True)
-    ip = models.CharField(
-        verbose_name='IP Code',
-        blank=True,
-        max_length=DEFAULT_SHORT_CHARFIELD_LENGTH
-    )
-    admission_date = models.DateField(
-        verbose_name='Date of Admission',
-        null=True,
-        blank=True)
-    surgery_date = models.DateField(
-        verbose_name='Date of Surgery', blank=True, null=True)
-    discharge_date = models.DateField(
-        verbose_name='Date of Discharge', blank=True, null=True)
+    age = models.IntegerField(verbose_name='Patient Age',
+                              null=True,
+                              default=0,
+                              blank=True)
+    ip = models.CharField(verbose_name='IP Code',
+                          blank=True,
+                          max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
+    admission_date = models.DateField(verbose_name='Date of Admission',
+                                      null=True,
+                                      blank=True)
+    surgery_date = models.DateField(verbose_name='Date of Surgery',
+                                    blank=True,
+                                    null=True)
+    discharge_date = models.DateField(verbose_name='Date of Discharge',
+                                      blank=True,
+                                      null=True)
 
-    height = models.IntegerField(
-        verbose_name='Height in cm', blank=True, null=True)
-    weight = models.IntegerField(
-        verbose_name='Weight in kg', blank=True, null=True)
-    menache_age = models.IntegerField(
-        verbose_name='Age at Menache', blank=True, null=True)
-    main_telephone = models.CharField(
-        verbose_name='Main Telephone number',
-        blank=True, max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
-    other_telephone = models.TextField(
-        verbose_name='Other Telephone numbers', blank=True, null=True)
-    address = models.TextField(verbose_name='Patient Address', blank=True)
-    regular_period = models.NullBooleanField(
-        verbose_name="Are Patient's Periods Regular?", blank=True)
-    last_period = models.DateField(
-        verbose_name="Date of last Period Date",
-        blank=True, null=True)
-    marital_status = models.CharField(
-        verbose_name='Marital Status',
-        max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
-        choices=MARITAL_STATUS_CHOICES,
-        blank=True
-    )
-    social_status = models.CharField(
-        verbose_name='Social Status',
-        max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
-        blank=True,
-        choices=SOCIAL_STATUS_CHOICES
-    )
-    first_pregnancy_age = models.IntegerField(
-        verbose_name='Age at first Pregnancy',
-        blank=True,
-        null=True,
-        help_text='yrs')
-    first_pregnancy_fathers_age = models.IntegerField(
-        verbose_name='Age of Father at first Pregnancy',
-        blank=True, null=True,
-        help_text='yrs')
-    pregnancy_count = models.IntegerField(
-        verbose_name='Number of Pregnancies',
-        null=True,
-        blank=True)
-    living_children_count = models.IntegerField(
-        verbose_name='Number of Living Children',
-        null=True,
-        blank=True)
-    stillbirth_count = models.IntegerField(
-        verbose_name='Number of Stillbirths',
-        null=True,
-        blank=True)
-    early_neonatal_death_count = models.IntegerField(
-        verbose_name='Number of Early Neonatal Deaths',
-        null=True,
-        blank=True)
-    last_pregnancy_age = models.IntegerField(
-        verbose_name='Age at last Pregnancy',
-        null=True,
-        blank=True,
-        help_text='yrs')
-    treatment_center_travel = models.TextField(
-        verbose_name='How did the Patient get to the treatment center?',
-        null=True,
-        blank=True, )
+    height = models.IntegerField(verbose_name='Height in cm', blank=True, null=True)
+    weight = models.IntegerField(verbose_name='Weight in kg', blank=True, null=True)
+    menache_age = models.IntegerField(verbose_name='Age at Menache',
+                                      blank=True, null=True, help_text='Leave blank if unknown')
+    main_telephone = models.CharField(verbose_name='Main Telephone number',
+                                      blank=True,
+                                      max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
+    other_telephone = models.TextField(verbose_name='Other Telephone numbers',
+                                       blank=True, null=True)
+    address = models.TextField(verbose_name='Patient Address',
+                               blank=True)
+    country = models.CharField(verbose_name='Patient Country',
+                               max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
+                               blank=True)
+    regular_period = models.NullBooleanField(verbose_name="Are Patient's Periods Regular?",
+                                             blank=True)
+    last_period = models.DateField(verbose_name="Date of last Period Date",
+                                   blank=True, null=True)
+    last_period_note = models.CharField(verbose_name="If no last period date,please explain:",
+                                   max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
+                                   choices=LAST_PERIOD_DATE_ALTERNATIVE_CHOICES,
+                                   blank=True, null=True,help_text="If last period date ")
+    marital_status = models.CharField(verbose_name='Marital Status',
+                                      max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
+                                      choices=MARITAL_STATUS_CHOICES,
+                                      blank=True)
+    social_status = models.CharField(verbose_name='Social Status',
+                                     max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
+                                     blank=True,
+                                     choices=SOCIAL_STATUS_CHOICES)
+    first_pregnancy_age = models.IntegerField(verbose_name='Age at first Pregnancy',
+                                              blank=True,
+                                              null=True,
+                                              help_text='yrs')
+    first_pregnancy_fathers_age = models.IntegerField(verbose_name='Age of Father at first Pregnancy',
+                                                      blank=True, null=True,
+                                                      help_text='(in years.) Leave blank if unknown')
+    pregnancy_count = models.IntegerField(verbose_name='Number of Pregnancies',
+                                          null=True,
+                                          blank=True)
+    living_children_count = models.IntegerField(verbose_name='Number of Living Children',
+                                                null=True,
+                                                blank=True)
+    stillbirth_count = models.IntegerField(verbose_name='Number of Stillbirths',
+                                           null=True,
+                                           blank=True)
+    early_neonatal_death_count = models.IntegerField(verbose_name='Number of Early Neonatal Deaths',
+                                                     null=True,
+                                                     blank=True)
+    last_pregnancy_age = models.IntegerField(verbose_name='Age at last Pregnancy',
+                                             null=True,
+                                             blank=True,
+                                             help_text='yrs')
+    treatment_center_travel = models.TextField(verbose_name='How did the Patient get to the treatment center?',
+                                               null=True,
+                                               blank=True, )
     treatment_center_travel_cost = models.CharField(
         verbose_name='How much did the journey to the treatment center cost?',
         blank=True,
         max_length=DEFAULT_SHORT_CHARFIELD_LENGTH)
-    age_fistula_started = models.IntegerField(
-        verbose_name='Age when the Fistula occurred',
-        null=True,
-        blank=True)
-    labor_duration = models.IntegerField(
-        verbose_name='How long was the labor?',
-        null=True,
-        blank=True,
-        help_text='hrs')
-    baby_birth_location = models.CharField(
-        verbose_name='Where was the baby born?',
-        blank=True,
-        max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
-        choices=BIRTH_LOCATION_CHOICES)
+    age_fistula_started = models.IntegerField(verbose_name='Age when the Fistula occurred',
+                                              null=True,
+                                              blank=True)
+    labor_duration = models.IntegerField(verbose_name='How long was the labor?',
+                                         null=True,
+                                         blank=True,
+                                         choices=LABOR_DURATION_CHOICES,
+                                         help_text='hrs')
+    baby_birth_location = models.CharField(verbose_name='Where was the baby born?',
+                                           blank=True,
+                                           max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
+                                           choices=BIRTH_LOCATION_CHOICES)
     delivery_type = models.CharField(verbose_name='What type of Delivery?',
                                      blank=True,
                                      max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
@@ -239,6 +291,14 @@ class PatientRecord(TimeStampedModel):
     def __unicode__(self):
         return "%s" % self.patient
 
+    def clean(self):
+        if self.baby_birth_location =='HOME' and 'CAESAREAN' in self.delivery_type:
+            raise ValidationError(
+              'Cannot have %(type)s at %(location)s',
+                code='invalid',
+                params={'location': self.get_baby_birth_location_display(),'type':self.get_delivery_type_display()},
+            )
+
 
 class Case(TimeStampedModel):
     status = models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,
@@ -246,15 +306,29 @@ class Case(TimeStampedModel):
                               default=CASE_STATUS_CHOICES[0][0])
     patientrecord = models.ForeignKey(PatientRecord)
     surgeon = models.ForeignKey(Surgeon, blank=True, null=True)
+    team_role = models.ManyToManyField(Surgeon, through='Team_Role',related_name='case_team_surgeon')
 
     def __unicode__(self):
-        return "%s" % self.patientrecord.patient
+        return "%s" % (self.patientrecord.patient)
+
+    def get_team_members(self):
+        return Team_Role.objects.filter(case=self)
+
+class Team_Role(models.Model):
+    surgeon = models.ForeignKey(Surgeon,related_name='team_role_surgeon')
+    case = models.ForeignKey(Case, related_name='team_role_case')
+    role = models.CharField(max_length=DEFAULT_SHORT_CHARFIELD_LENGTH,blank=True,
+                            choices=TEAM_ROLES_CHOICES)
+    def __unicode__(self):
+        return "%(name)s on case:%(case)s as %(role)s" % {'name':self.surgeon.get_full_name(),
+                                                     'case':self.case.patientrecord.patient,
+                                                     'role':self.get_role_display() }
 
 
 class PatientRecordForm(forms.ModelForm):
     class Meta:
         model = PatientRecord
-        exclude = ['published', ]
+        exclude = ['published',]
 
     def clean(self):
         cleaned_data = super(PatientRecordForm, self).clean()

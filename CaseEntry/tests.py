@@ -1,28 +1,18 @@
 from django.core.urlresolvers import resolve
-
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.test import Client
-
-from CaseEntry.models import Case, PatientRecord
-
+from django.test import TestCase, RequestFactory
+from CaseEntry.models import Case, PatientRecord,Team_Role,TEAM_ROLES_CHOICES
 from Surgeon.models import Surgeon
 from CaseEntry.views import case_form
-
 
 def create_a_surgeon_record(name,
                             is_staff=True,
                             is_superuser=False,
                             institution='abc clinic'):
-    user = User.objects.create_user(name, '%s@test.com' % name, 'pass')
-    user.save()
-    user.is_staff = is_staff
-    user.is_superuser = is_superuser
-    user.save()
-    surgeon = Surgeon.objects.create(
-        institution=institution,
-        user=user)
-    return surgeon
+    user = Surgeon.objects.create_user('%s@test.com' % name, 'pass')
+    return user
 
 
 class PatientrecordPageTest(TestCase):
@@ -60,28 +50,22 @@ class TestFixture(TestCase):
         self.patientrecord = PatientRecord.objects.create(
             patient='my_new_test_patient',
             age=22,
+            published=True,
             ip='ipcode',
             admission_date='2014-4-14',
             surgery_date='2014-5-24',
         )
-
-        self.adminuser = User.objects.create_user('admin', 'admin@test.com', 'pass')
-        self.adminuser.save()
-        self.adminuser.is_staff = True
-        self.adminuser.is_superuser = True
-        self.adminuser.save()
-        self.surgeon = Surgeon.objects.create(
-            institution='abc',
-            user=self.adminuser)
-        self.case = Case(patientrecord=self.patientrecord, surgeon=self.surgeon)
+        self.adminuser = Surgeon.objects.create_superuser('admin@test.com', 'pass')
+        self.case = Case(patientrecord=self.patientrecord, surgeon=self.adminuser)
         self.case.save()
+        self.surgeon = self.adminuser
         self.c = Client()
 
 
 class SimpleCaseNotes(TestFixture):
     def test_make_comment(self):
         c = self.c
-        c.login(username='admin', password='pass')
+        c.login(email='admin@test.com', password='pass')
         response = c.get('/case/1/')
         self.assertEquals(response.status_code, 200)
         response = c.post('/case/1/', {'message': 'testmsg'})
@@ -95,7 +79,8 @@ class SimpleCaseNotes(TestFixture):
 class AddCase(TestFixture):
     def test_create_case(self):
         c = self.c
-        c.login(username='admin', password='pass')
+        loginsuccess = c.login(email='admin@test.com', password='pass')
+        self.assertTrue(loginsuccess)
         response = c.get('/caselist/')
         case0 = response.context['cases'][0]
         self.assertEquals(response.status_code, 200)
@@ -111,15 +96,31 @@ class AddCase(TestFixture):
         self.assertEquals(len(cases), 2)
 
 
+    def test_cannot_have_caesarean_at_home(self):
+        self.patientrecord2_data = {
+            'patient':'my_new_test_caesarean_home_patient2',
+            'baby_birth_location':'HOME',
+            'delivery_type':'CAESAREAN',
+            'age':22,
+            'ip':'ipcode2',
+            'admission_date':'2014-4-14',
+            'surgery_date':'2014-5-24',
+        }
+        response = self.c.post('/submitcase/', self.patientrecord2_data)
+        self.assertEqual(response.status_code,302)
+        cases = Case.objects.all()
+        self.assertEquals(len(cases), 1)
+
+
 class ViewPatientRecord(TestFixture):
     def test_view(self):
-        self.c.login(username='admin', password='pass')
+        self.c.login(email='admin@test.com', password='pass')
         response = self.c.get('/viewcase/1/')
         self.assertFalse(response.context['form_editable'])
         self.assertTrue('my_new_test_patient' in response.content, response.content)
 
     def test_cannot_see_unpublished_patients(self):
-        self.c.login(username='admin', password='pass')
+        self.c.login(email='admin@test.com', password='pass')
         response = self.c.get('/caselist/')
         self.assertEquals(response.status_code, 200)
         cases = response.context['cases']
@@ -135,12 +136,11 @@ class ViewPatientRecord(TestFixture):
 class AdminViews(TestFixture):
     # we have a record & an admin. Lets add another surgeon & give them a patient
     def test_add_two_surgeons_and_patients(self):
-        user2 = User.objects.create_user('user2', 'user2@test.com', 'pass')
-        user2.save()
-        surgeon2 = Surgeon.objects.create(institution='abc', user=user2)
+        surgeon2 = Surgeon.objects.create_user('user2@test.com', 'pass')
         patientrecord2 = PatientRecord.objects.create(
             patient='my_new_test_patient2',
             age=23,
+            published=True,
             ip='ipcode2',
             admission_date='2014-6-14',
             surgery_date='2014-8-24',
@@ -148,19 +148,21 @@ class AdminViews(TestFixture):
         case2 = Case(patientrecord=patientrecord2, surgeon=surgeon2)
         case2.save()
         # now user2 should see just one record, but adminuser should see two
-        self.c.login(username='user2', password='pass')
+        self.c.login(email='user2@test.com', password='pass')
         response = self.c.get('/caselist/')
         cases = response.context['cases']
         self.assertEquals(len(cases), 1)
         # admin user
-        self.c.login(username='admin', password='pass')
+        loginsuccess = self.c.login(email='admin@test.com', password='pass')
+        self.assertTrue(loginsuccess)
         response = self.c.get('/caselist/')
         cases = response.context['cases']
+        print [c.published for c in cases]
         self.assertEquals(len(cases), 2)
 
     def test_change_status_admin(self):
         """only admins can change a status."""
-        self.c.login(username='admin', password='pass')
+        self.c.login(email='admin@test.com', password='pass')
         case1 = Case.objects.get(pk=1)
         self.assertEquals(case1.status, 'NEW')
         response = self.c.post('/case/1/', {'status': 'APPROVED'})
@@ -172,7 +174,7 @@ class AdminViews(TestFixture):
         """CURRENTLY only admins can change a status.
         # todo : surgeons can change to some statuses, but not others
         """
-        self.c.login(username='admin', password='pass')
+        self.c.login(email='admin@test.com', password='pass')
         case1 = Case.objects.get(pk=1)
         self.assertEquals(case1.status, 'NEW')
         response = self.c.post('/case/1/', {'status': 'APPROVED'})
@@ -180,15 +182,13 @@ class AdminViews(TestFixture):
         case1 = Case.objects.get(pk=1)
         self.assertEquals(case1.status, 'APPROVED')
 
-        user2 = User.objects.create_user('user2', 'user2@test.com', 'pass')
-        user2.save()
-        surgeon2 = Surgeon.objects.create(institution='abc', user=user2)
+        surgeon2= Surgeon.objects.create_user('user2@test.com', 'pass')
         case1.surgeon = surgeon2
         case1.save()
         # assign the case to surgeon2
         self.assertEquals(case1.surgeon, surgeon2)
         # surgeon2 shouldnt be able to update the status
-        self.c.login(username='user2', password='pass')
+        self.c.login(email='user2@test.com', password='pass')
         response = self.c.post('/case/1/', {'status': 'COMPLETED'})
         case1 = Case.objects.get(pk=1)
         self.assertNotEqual(case1.status, 'COMPLETED')
@@ -199,7 +199,7 @@ class AdminViews(TestFixture):
         """
         http://127.0.0.1:8000/surgeons/
         """
-        self.c.login(username='admin', password='pass')
+        self.c.login(email='admin@test.com', password='pass')
         response = self.c.get('/surgeons/')
         self.assertEquals(response.status_code, 200)
         surgeons = response.context['surgeon_list']
@@ -209,7 +209,7 @@ class AdminViews(TestFixture):
         surgeons = response.context['surgeon_list']
         self.assertEquals(len(surgeons), 2)
         #         page not visible to surgeons, only super admins
-        self.c.login(username='surgeon2', password='pass')
+        self.c.login(email='surgeon2@test.com', password='pass')
         response = self.c.get('/surgeons/')
         self.assertNotEquals(response.status_code, 200, response.status_code)
 
@@ -218,7 +218,7 @@ class SurgeonView(TestFixture):
     def test_add_new_case_from_surgeon_details_page(self):
         surgeon2 = create_a_surgeon_record('surgeon2')
         c = self.c
-        c.login(username='admin', password='pass')
+        c.login(email='admin@test.com', password='pass')
         response = c.get('/surgeondetails/2/')
         contextsurgeon = response.context['surgeon']
         self.assertEquals(response.status_code, 200)
@@ -241,7 +241,7 @@ class TestLoggedInOnly(TestFixture):
         c.login(username='admin', password='pass')
         response = c.post('/surgeon/add/', data={
             'institution': 'new clinic',
-            'username': 'new_user',
+            'email': 'new_user@test.com',
             'password1': 'pass',
             'password2': 'pass'
                          ''})
@@ -271,7 +271,8 @@ class PaginationTests(TestFixture):
 
     def test_pages_cases_list(self):
         c = self.c
-        c.login(username='admin', password='pass')
+        loginok = c.login(email='admin@test.com', password='pass')
+        self.assertTrue(loginok)
         response = c.get('/caselist/')
         cases = response.context['cases']
 
@@ -280,20 +281,11 @@ class PaginationTests(TestFixture):
 
     def test_surgeon_paged_list(self):
         for i in range(0, 40):
-            u = User.objects.create_user(
-                str(i),
-                'admin@test.com',
+            u = Surgeon.objects.create_user(
+                'admin%s@test.com' % str(i),
                 'pass')
-            u.save()
-            u.is_staff = True
-            u.is_superuser = True
-            u.save()
-            s = Surgeon.objects.create(
-                institution='abc%s' % i,
-                user=u)
-
         c = self.c
-        c.login(username='admin', password='pass')
+        c.login(email='admin@test.com', password='pass')
         response = c.get('/surgeons/')
         surgeons = response.context['surgeon_list']
         self.assertTrue(len(surgeons) < 25)
@@ -317,9 +309,24 @@ class SearchCasesTests(TestFixture):
 
     def test_adminsearch(self):
         c = self.c
-        c.login(username='admin', password='pass')
+        c.login(email='admin@test.com', password='pass')
         response = c.get('/caselist/?q=1')
         cases = response.context['cases']
         for i in cases:
             self.assertTrue('1' in i.patientrecord.patient, i.patientrecord.patient)
 
+class AddOtherRolesToCaseTests(TestFixture):
+     # testfixture setUp has an admin and a case created
+
+    def test_add_surgeon2(self):
+        newcase = Case.objects.get(id=1)
+        self.assertEqual(newcase.patientrecord.patient, 'my_new_test_patient')
+        surgeon2 = Surgeon.objects.create_user(email='admin2@test.com', password='pass')
+        teamrole = Team_Role.objects.create(surgeon=surgeon2,case=newcase,role=TEAM_ROLES_CHOICES[0])
+        self.assertEqual(Team_Role.objects.count(),1)
+        c = self.c
+        success = c.login(email='admin@test.com', password='pass')
+        self.assertTrue(success)
+        response = c.get('/case/1/')
+        context= response.context
+        print context['case']
